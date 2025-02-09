@@ -26,8 +26,8 @@ logs/
 # ===================================
 # Datos
 # ===================================
-data/Training/
-data/Test/
+data/raw/
+data/processed/
 
 # ===================================
 # Modelos entrenados

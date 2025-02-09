@@ -1,0 +1,14 @@
+# Rutas principales del proyecto
+data_dir: "data"
+train_dir: "data/Training"
+test_dir: "data/Test"
+
+# Información sobre clases
+classes:
+  - "fire"
+  - "nofire"
+
+# Configuración de almacenamiento de resultados
+results_dir: "experiments/results"
+logs_dir: "experiments/logs"
+checkpoints_dir: "experiments/checkpoints"

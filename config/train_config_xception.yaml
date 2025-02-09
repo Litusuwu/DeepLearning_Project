@@ -1,0 +1,19 @@
+epochs: 10
+batch_size: 32
+input_shape: [224, 224, 3]
+optimizer: "adam"
+loss: "binary_crossentropy"
+metrics:
+  - "accuracy"
+augmentation:
+  shear_range: 0.2
+  zoom_range: 0.2
+  horizontal_flip: true
+validation_split: 0.2
+early_stopping:
+  monitor: "val_loss"
+  patience: 3
+output_dirs:
+  logs: "experiments/individual_models/xception/logs"
+  checkpoints: "experiments/individual_models/xception/checkpoints"
+  results: "experiments/individual_models/xception/results"
