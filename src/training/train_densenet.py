@@ -1,81 +1,131 @@
+import os
+import yaml
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import DenseNet121
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
-import os
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
-# Define las rutas a tus carpetas de entrenamiento y prueba.
-# Asegúrate de que en "Training" y "Test" existan dos subcarpetas (por ejemplo, "fire" y "nofire")
-train_dir = "/home/litus/Documents/Universidad/DeepLearning/Training/Training"
-test_dir  = "/home/litus/Documents/Universidad/DeepLearning/Test/Test"
+# Funciones de utilidad
+def load_config(config_path):
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
 
-# Parámetros
-batch_size = 32
-img_height = 224  # DenseNet121 utiliza 224x224 por defecto
-img_width = 224
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-# Configura el generador para entrenamiento con data augmentation
-train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True
-)
+def build_densenet_model(input_shape):
+    base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=input_shape)
+    base_model.trainable = False  # Congelar la base
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dropout(0.5)(x)
+    # Clasificación binaria
+    predictions = Dense(1, activation='sigmoid')(x)
+    return Model(inputs=base_model.input, outputs=predictions)
 
-# Para el conjunto de prueba se aplica solo el rescale
-test_datagen = ImageDataGenerator(rescale=1./255)
+if __name__ == '__main__':
+    # Cargar configuraciones específicas para DenseNet y rutas de datos
+    train_config = load_config("configs/train_config_densenet.yaml")
+    data_config = load_config("configs/data_paths.yaml")
 
-# Crea el generador para el conjunto de entrenamiento (usamos 'binary' para etiquetas binarias)
-train_generator = train_datagen.flow_from_directory(
-    train_dir,
-    target_size=(img_height, img_width),
-    batch_size=batch_size,
-    class_mode='binary'
-)
+    epochs = train_config.get("epochs", 10)
+    batch_size = train_config.get("batch_size", 32)
+    input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
+    optimizer = train_config.get("optimizer", "adam")
+    loss = train_config.get("loss", "binary_crossentropy")
+    metrics_list = train_config.get("metrics", ["accuracy"])
 
-# Crea el generador para el conjunto de prueba
-test_generator = test_datagen.flow_from_directory(
-    test_dir,
-    target_size=(img_height, img_width),
-    batch_size=batch_size,
-    class_mode='binary'
-)
+    # Configurar directorios de salida
+    logs_dir = train_config["output_dirs"]["logs"]
+    checkpoints_dir = train_config["output_dirs"]["checkpoints"]
+    results_dir = train_config["output_dirs"]["results"]
+    ensure_dir(logs_dir)
+    ensure_dir(checkpoints_dir)
+    ensure_dir(results_dir)
 
-# Carga el modelo DenseNet121 preentrenado en ImageNet, sin la capa superior
-base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(img_height, img_width, 3))
+    # Configurar rutas de datos
+    train_dir = data_config.get("train_dir", "data/processed/Training")
+    val_dir = data_config.get("val_dir", None)
 
-# Congela las capas del modelo base para entrenar inicialmente solo la cabeza
-base_model.trainable = False
+    # Generadores de datos (usando validation_split si no hay carpeta de validación)
+    train_datagen = ImageDataGenerator(
+        rescale=1./255,
+        shear_range=train_config.get("augmentation", {}).get("shear_range", 0.0),
+        zoom_range=train_config.get("augmentation", {}).get("zoom_range", 0.0),
+        horizontal_flip=train_config.get("augmentation", {}).get("horizontal_flip", False),
+        validation_split=train_config.get("validation_split", 0.0)
+    )
+    test_datagen = ImageDataGenerator(rescale=1./255)
 
-# Agrega la cabeza de clasificación
-x = base_model.output
-x = GlobalAveragePooling2D()(x)
-x = Dropout(0.5)(x)  # Ayuda a prevenir el sobreajuste
-# Para clasificación binaria, usamos 1 salida con activación sigmoide
-predictions = Dense(1, activation='sigmoid')(x)
+    if val_dir is None and train_config.get("validation_split", 0) > 0:
+        train_generator = train_datagen.flow_from_directory(
+            train_dir,
+            target_size=input_shape[:2],
+            batch_size=batch_size,
+            class_mode='binary',
+            subset='training'
+        )
+        validation_generator = train_datagen.flow_from_directory(
+            train_dir,
+            target_size=input_shape[:2],
+            batch_size=batch_size,
+            class_mode='binary',
+            subset='validation'
+        )
+    else:
+        train_generator = train_datagen.flow_from_directory(
+            train_dir,
+            target_size=input_shape[:2],
+            batch_size=batch_size,
+            class_mode='binary'
+        )
+        validation_generator = None
+        if val_dir is not None:
+            validation_generator = test_datagen.flow_from_directory(
+                val_dir,
+                target_size=input_shape[:2],
+                batch_size=batch_size,
+                class_mode='binary',
+                shuffle=False
+            )
 
-# Define el modelo completo
-model = Model(inputs=base_model.input, outputs=predictions)
+    # Construir y compilar el modelo
+    model = build_densenet_model(input_shape)
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics_list)
 
-# Compila el modelo con binary_crossentropy
-model.compile(optimizer='adam', 
-              loss='binary_crossentropy', 
-              metrics=['accuracy'])
+    # Callbacks
+    checkpoint_path = os.path.join(checkpoints_dir, "densenet_best.h5")
+    csv_logger_path = os.path.join(logs_dir, "densenet_training.csv")
+    checkpoint = ModelCheckpoint(checkpoint_path, monitor=train_config.get("early_stopping", {}).get("monitor", "val_loss"),
+                                 save_best_only=True, verbose=1)
+    early_stopping = EarlyStopping(monitor=train_config.get("early_stopping", {}).get("monitor", "val_loss"),
+                                   patience=train_config.get("early_stopping", {}).get("patience", 3),
+                                   verbose=1)
+    csv_logger = CSVLogger(csv_logger_path)
+    callbacks_list = [checkpoint, early_stopping, csv_logger]
 
-# Muestra un resumen del modelo
-model.summary()
-print("Número de clases en Training:", train_generator.num_classes)
+    # Entrenamiento
+    if validation_generator is not None:
+        history = model.fit(
+            train_generator,
+            steps_per_epoch=train_generator.samples // batch_size,
+            validation_data=validation_generator,
+            validation_steps=validation_generator.samples // batch_size,
+            epochs=epochs,
+            callbacks=callbacks_list
+        )
+    else:
+        history = model.fit(
+            train_generator,
+            steps_per_epoch=train_generator.samples // batch_size,
+            epochs=epochs,
+            callbacks=callbacks_list
+        )
 
-# Entrena el modelo
-epochs = 10  # Puedes ajustar el número de épocas según sea necesario
-history = model.fit(
-    train_generator,
-    steps_per_epoch=train_generator.samples // batch_size,
-    validation_data=test_generator,
-    validation_steps=test_generator.samples // batch_size,
-    epochs=epochs
-)
-
-# Guarda el modelo entrenado (opcional)
-model.save("modelo_densenet.h5")
+    # Guardar el modelo final
+    final_model_path = os.path.join(results_dir, "densenet_final.h5")
+    model.save(final_model_path)
+    print("Modelo DenseNet final guardado en:", final_model_path)
