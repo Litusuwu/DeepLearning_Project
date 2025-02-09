@@ -1,4 +1,4 @@
-# 🔥 Detección de Incendios Forestales con Deep Learning 🔥
+# Detección de Incendios Forestales con Deep Learning 🔥
 
 ## 📌 Descripción
 Este proyecto forma parte del curso **Deep Learning (1INF52)** de la **Pontificia Universidad Católica del Perú (PUCP)**. Se enfoca en el desarrollo de un modelo basado en aprendizaje profundo para la detección temprana de incendios forestales mediante imágenes capturadas por drones. Se implementa un ensamble de modelos CNN avanzados (Xception, DenseNet y ResNet) y se optimiza utilizando **Knowledge Distillation** y **Pruning** para permitir su implementación en dispositivos con recursos limitados.
