@@ -1,0 +1,78 @@
+\section{Marco Teórico}
+El propósito de este marco teórico es introducir los conceptos clave que permitan abordar
+la problemática de la detección de incendios forestales a partir del análisis de imágenes
+con técnicas de \textit{deep learning}. Se explorarán las capacidades de las redes neuronales,
+específicamente las redes neuronales convolucionales (CNNs), como herramientas a usar
+para la detección y mitigación de estos eventos.
+
+\subsection{Redes Neuronales Convolucionales}
+Las redes neuronales convolucionales (CNNs) son un tipo de arquitectura de aprendizaje
+profundo altamente efectiva para el procesamiento de datos que se pueden representar
+como una cuadrícula, como lo son las imágenes. Su diseño les permite aprender de forma
+automática jerarquías espaciales y patrones relevantes, lo cual las convierte en una
+herramienta ideal para la claificación de imágenes y la detección de objetos.
+
+Su arquitectura generalmente consta de tres tipos de capas principales: convolucionales,
+de agrupación (\textit{pooling}) y completamente conectadas. Las capas convolucionales
+aplican filtros a la imagen de entrada para extraer características relevantes, mientras
+que las de agrupación reducen la dimensionalidad de las características extraídas.
+Finalmente, las capas completamente conectadas se encargan de la clasificación final,
+al asegurar que cada neurona de salida esté conectada a todas las neuronas de la capa
+anterior.
+
+El uso de CNNs en la detección de humo de incendios forestales se ha vuelto clave gracias
+a su capacidad para procesar grandes volúmenes de datos visuales, como imágenes sateliteles
+y transmisiones de cámaras de vigilancia. Esto permite diferenciar el humo de elementos
+como nubes o niebla, y de forma más eficiente a diferencia de métodos tradicionales.
+
+\subsection{Xception (Extreme Inception)}
+Xception es una arquitectura basada en Inception que sustituye las convoluciones
+estándar por \textit{depthwise separable convolutions}, lo que reduce la cantidad de
+parámetros sin afectar el rendimiento. Separa la extracción de características en dos
+etapas: primero filtra por canal y luego mezcla la información entre canales. Esto
+permite un aprendizaje más eficiente y ha mostrado mejor rendimiento que InceptionV3
+en conjuntos de datos grandes, aunque su implementación puede ser más costosa
+computacionalmente en algunos casos \cite{sathishkumar_forest_2023}.
+
+
+\subsection{DenseNet}
+DenseNet optimiza el flujo de información conectando cada capa con todas las anteriores,
+fomentando la reutilización de características y mejorando la propagación del gradiente.
+Gracias a esta estructura, logra reducir el número de parámetros en comparación con otras
+arquitecturas profundas sin perder precisión. Es útil para modelos muy profundos, pero su
+alto número de conexiones puede aumentar el consumo de memoria durante el entrenamiento.
+
+\subsection{ResNet}
+ResNet introduce \textit{skip connections} o conexiones residuales que permiten que
+los gradientes atraviesen varias capas sin degradarse, resolviendo el problema del
+desvanecimiento del gradiente en redes profundas. En lugar de aprender transformaciones
+completas, aprende diferencias entre la entrada y la salida esperada, lo que facilita
+el entrenamiento y permite construir redes con cientos de capas. Aunque es altamente
+eficiente, las versiones más profundas pueden requerir un ajuste cuidadoso de
+hiperparámetros para evitar sobrecostos computacionales \cite{sathishkumar_forest_2023}.
+
+\subsection{YOLO}
+You Only Look Once es un modelo avanzaado de detección de objetos diseñado para identificar
+y localizar elemntos en imágenes en tiempo real con alta precisión. Su funcionamiento se
+basa en redes neuronales convolucionales (CNNs) para analizar imágenes con un solo
+procesamiento, dividiéndolas en cuadrículas y prediciendo la posición, dimensiones y
+clase de los objetos detectados \cite{yaseen2024yolov8indepthexplorationinternal}.
+
+YOLOv8, la versión más reciente, introduce un enfoque sin anclas (\textit{anchor-free}),
+eliminando las posiciones predefinidas de las cajas delimitadoras usadas en versiones
+anteriores. Esto le ayuda a simplificar el entrenamiento y mejorar la precisión en la
+detección de objetos con formas y tamaños variables. Además, incorpora CSPNet
+(\textit{Cross-Stage Partial Networks}) como backbone, una arquitectura que optimiza el
+flujo de información y reutiliza características de capas anteriores para reducir las
+redundancias y mejorar la eficiencia computacional.
+
+Estas características le permiten a YOLOv8 servir como herramienta altamente eficaz para
+tareas en tiempo real, y para actividades de vigilancia y monitoreo ambiental como es el
+caso de la detección de incendios forestales \cite{s23208374}.
+
+\subsection{Transfer Learning}
+El aprendizaje por transferencia es una técnica de aprendizaje automático que consiste
+en reutilizar conocimientos aprendidos en un dominio para mejorar el rendimiento en otro
+dominio relacionado. En el contexto de las redes neuronales, esto implica tomar una red
+preentrenada en un conjunto de datos grande y ajustarla a un conjunto de datos más
+pequeño y específico.

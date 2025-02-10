@@ -1,0 +1,81 @@
+
+% Preamble
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+
+\usepackage{listings}          % For code snippets
+\usepackage{xcolor}            % For colored text and boxes
+\usepackage{tcolorbox}         % For nice looking boxes
+\usepackage{enumitem}          % For better lists
+\usepackage{tikz}              % For drawings and diagrams
+\usepackage{mathtools}         % Enhanced math tools
+\usepackage{tocloft}           % For customizing ToC
+\usepackage{etoolbox}          % For patching commands
+\usepackage{parskip}
+\usepackage[spanish]{babel}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{hyperref}
+
+\graphicspath{{images/}}
+\bibliographystyle{unsrt}
+
+\newcommand{\courseTitle}{Deep Learning}
+\newcommand{\college}{Pontificia Universidad Católica del Perú}
+\newcommand{\faculty}{Facultad de Ciencias e Ingeniería}
+\newcommand{\courseCode}{1INF52}
+\newcommand{\semester}{2025-0}
+\newcommand{\noteDate}{\today}
+\newcommand{\authors}{
+    \begin{tabular}{@{}l@{\hspace{4em}}l@{}}
+        Cántaro Márquez, Patricia Natividad & 20210907 \\[0.5cm]
+        Nicho Manrique, Saymon Estefano & 20211866 \\[0.5cm]
+        Zegarra Barrenechea, Carlos Eduardo & 20216177
+    \end{tabular}
+}
+
+% for important notes
+\newtcolorbox{important}[1]{
+    colback=red!5!white,
+    colframe=red!75!black,
+    title=\textbf{#1}
+}
+
+% header and footer setup
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\courseTitle}
+\lhead{\courseCode}
+\cfoot{\thepage}
+\setlength{\headheight}{14.5pt}
+
+\setlength{\parindent}{0pt}
+
+% Document
+\begin{document}
+
+    \input{contents/title}
+    \tableofcontents
+    \newpage
+    \input{contents/intro}
+    \input{contents/problem-statement}
+    \input{contents/sota}
+    \input{contents/theoretical}
+    \input{contents/model}
+    
+    % \include{contents/experimentation}
+    % \include{contents/conclusions}
+
+    \newpage
+    \bibliography{../contents/references}
+
+\end{document}
