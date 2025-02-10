@@ -34,3 +34,20 @@ data/processed/
 # ===================================
 models/*.h5
 models/*.ckpt
+
+# ===================================
+# LaTeX
+# ===================================
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.fls
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+
+# *.pdf
