@@ -5,10 +5,9 @@ test_data:
   batch_size: 32
   class_mode: "binary"
 
-# cambiar segun lo necesario
 models_to_evaluate:
-  # - name: "DenseNet Model"
-  #   path: "experiments/individual_models/densenet/results/densenet_final.h5"
+  - name: "DenseNet Model"
+    path: "src/evaluation/experiments/individual_models/densenet/results/model_20250213_114518.keras"
 
   # - name: "Xception Model"
   #   path: "experiments/individual_models/xception/results/xception_final.h5"

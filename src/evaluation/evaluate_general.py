@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Para métricas y curva ROC
-from src.evaluation.metrics import compute_metrics, plot_roc_curve
+from metrics import compute_metrics, plot_roc_curve
 
 def load_config(config_path: str) -> dict:
     """Carga un archivo YAML y retorna un diccionario con la configuración."""
@@ -14,7 +14,7 @@ def load_config(config_path: str) -> dict:
 
 if __name__ == "__main__":
     # 1. Cargar la configuración de evaluación
-    eval_config = load_config("configs/eval_config.yaml")
+    eval_config = load_config("config/eval_config.yaml")
 
     # 2. Extraer parámetros de test_data
     test_data_cfg = eval_config["test_data"]
@@ -24,14 +24,14 @@ if __name__ == "__main__":
     batch_size = test_data_cfg["batch_size"]
     class_mode = test_data_cfg["class_mode"]
 
-    # 3. Configurar ImageDataGenerator para test
+    # 3. setup ImageDataGenerator for testing
     test_datagen = ImageDataGenerator(rescale=1./255)
     test_generator = test_datagen.flow_from_directory(
         test_dir,
         target_size=(img_height, img_width),
         batch_size=batch_size,
         class_mode=class_mode,
-        shuffle=False  # Para alinear las predicciones con las etiquetas verdaderas
+        shuffle=False  # to align predictions w the right tags
     )
 
     # 4. Cargar la lista de modelos a evaluar
@@ -52,21 +52,19 @@ if __name__ == "__main__":
         model_name = model_info["name"]
         model_path = model_info["path"]
 
-        print(f"\n=== Evaluando {model_name} ===")
-        print(f"Modelo en: {model_path}")
-
-        if not os.path.exists(model_path):
-            print(f"Error: El modelo '{model_path}' no existe. Saltando.")
+        if model_path.endswith(".keras") or model_path.endswith(".h5"):
+            model = tf.keras.models.load_model(model_path) # load model
+            print(f"\n=== Evaluating {model_name} ===")
+            print(f"Model in: {model_path}")
+        else:
+            print(f"⚠️ Unsupported model format: {model_path}. Skipping.")
             continue
 
-        # Cargar el modelo
-        model = tf.keras.models.load_model(model_path)
-
-        # Predicciones sobre el test set
+        # predictions set
         steps = int(np.ceil(test_generator.samples / batch_size))
         predictions = model.predict(test_generator, steps=steps, verbose=0)
 
-        # Etiquetas verdaderas
+        # real tags
         true_classes = test_generator.classes
 
         # (Opcional) Ajuste si class_mode es 'categorical' vs 'binary'
@@ -90,7 +88,7 @@ if __name__ == "__main__":
                 # ... se simplifica en binario en este ejemplo
                 pass
 
-        # 8. Calcular las métricas usando compute_metrics
+        # 8. calculate metrics
         metrics_dict, report, roc_data, predicted_classes = compute_metrics(
             true_labels=true_classes,
             predicted_probs=predictions,
@@ -110,4 +108,4 @@ if __name__ == "__main__":
         fpr, tpr, auc_value = roc_data
         plot_roc_curve(fpr, tpr, auc_value, model_name=model_name)
 
-    print("\nEvaluaciones completadas.")
+    print("\nEvaluations completed.")

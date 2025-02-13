@@ -1,0 +1,103 @@
+\section{Entrenamiento}
+En esta sección, describimos la primera fase de nuestro experimento con la arquitectura
+DenseNet. El objetivo de este entrenamiento inicial es obtener un modelo base
+y analizar aspectos clave como la estabilidad de la pérdida, el sobreajuste
+y los desbalances en las clases. Los resultados de esta fase servirán como base para
+mejorar el modelo y el entrenamiento de los demás en las siguientes iteraciones.
+
+
+\subsection{Hiperparámetros}
+\subsubsection{Tamaño del Batch (Batch Size)}
+\begin{itemize}
+    \item \textbf{Inicial:} 16
+    \item \textbf{Optimización:} Se redujo a 8 en la última versión del modelo para mejorar la \textbf{generalización}, reduciendo la probabilidad de sobreajuste.
+\end{itemize}
+
+\subsubsection{Tasa de Aprendizaje (Learning Rate)}
+\begin{itemize}
+    \item \textbf{Inicial:} 0.001
+    \item \textbf{Optimización:} Se redujo a 0.0001 para hacer los ajustes de los pesos más suaves y evitar grandes oscilaciones en la pérdida.
+\end{itemize}
+
+\subsubsection{Optimizador}
+\begin{itemize}
+    \item \textbf{Inicial:} Adam
+    \item \textbf{Optimización:} Se mantuvo Adam porque ofrece una actualización eficiente de los pesos con momentums adaptativos, pero se ajustaron sus hiperparámetros internos.
+\end{itemize}
+
+\subsubsection{Fine-Tuning)}
+\begin{itemize}
+    \item \textbf{Modelo 2:} Se descongelaron 10 capas de DenseNet, pero esto no mejoró la precisión.
+    \item \textbf{Modelo 3:} Se redujo a 5 capas, logrando un entrenamiento más estable sin tanto sobreajuste.
+\end{itemize}
+
+\subsubsection{Loss Function}
+\begin{itemize}
+    \item \textbf{Inicial:} Cross-Entropy estándar.
+    \item \textbf{Optimización:} Se agregó \textbf{pesado de clases (class weighting)} para reducir el sesgo del modelo hacia imágenes de "Fuego" y mejorar la detección de "No Fuego".
+\end{itemize}
+
+\subsubsection{Balanceo de Clases}
+\begin{itemize}
+    \item \textbf{Problema:} El dataset tenía muchas más imágenes de "Fuego" que de "No Fuego".
+    \item \textbf{Solución:} Se aplicó pesado de clases en la función de pérdida, obligando al modelo a prestar más atención a la clase minoritaria.
+\end{itemize}
+
+\subsubsection{Epochs}
+\begin{itemize}
+    \item \textbf{Inicial:} 30 épocas.
+    \item \textbf{Optimización:} Se ha mantenido, pero con ajustes en la tasa de aprendizaje y el batch size para evitar sobreajuste prematuro.
+\end{itemize}
+
+\subsubsection{Data Augmentation}
+\begin{itemize}
+    \item \textbf{Inicial:} Transformaciones básicas como escalado y normalización.
+    \item \textbf{Optimización:} Se añadieron rotaciones, flips horizontales y cambios de brillo y contraste para mejorar la robustez del modelo.
+\end{itemize}
+
+\subsubsection{Early Stopping}
+\begin{itemize}
+    \item Habilitado para detener el entrenamiento si la pérdida de validación deja de mejorar después de un cierto número de épocas, evitando un uso innecesario de recursos.
+\end{itemize}
+
+\subsubsection{Número de Neuronas en Capas Densas}
+\begin{itemize}
+    \item \textbf{Denso Final:} Se mantuvo en 512 neuronas con activación ReLU antes de la capa de salida.
+\end{itemize}
+
+\paragraph{Regularización L2}
+\begin{itemize}
+    \item Añadida en las capas densas para evitar sobreajuste al penalizar valores de pesos muy altos.
+\end{itemize}
+
+\subsubsection{Dropout}
+\begin{itemize}
+    \item \textbf{Inicial:} 0.3
+    \item \textbf{Optimización:} Aumentado a 0.5 en la última versión para mejorar la robustez del modelo reduciendo la dependencia de neuronas individuales.
+\end{itemize}
+
+\subsubsection{Análisis de Mejoras del Modelo}
+
+\paragraph{Modelo 1 $\rightarrow$ Modelo 2}
+\begin{itemize}
+    \item El ajuste fino (descongelar 10 capas) no mejoró la precisión.
+    \item La pérdida de validación disminuyó, pero el sobreajuste aumentó.
+    \item El desbalance de clases siguió siendo un problema grave (Recall de "No Fuego" = 0.02).
+    \item El modelo tenía un sesgo fuerte hacia las imágenes de "Fuego".
+\end{itemize}
+
+\subsubsection{Modelo 2 $\rightarrow$ Modelo 3}
+\begin{itemize}
+    \item Se redujo el ajuste fino de 10 capas a 5 capas $\rightarrow$ Mayor estabilidad.
+    \item La pérdida de validación se volvió más estable.
+    \item El Recall de "No Fuego" mejoró de 0.02 a 0.06 (aunque sigue siendo bajo).
+    \item El modelo aún tiene dificultades para detectar "No Fuego".
+\end{itemize}
+
+\subsubsection{Modelo 3 $\rightarrow$ Modelo 4 (Modelo Actual)}
+\begin{itemize}
+    \item Se redujo el tamaño del batch de 16 a 8 $\rightarrow$ Mejora la generalización.
+    \item Se redujo la tasa de aprendizaje de 0.001 a 0.0001 $\rightarrow$ Previene el sobreajuste.
+    \item Se agregó balanceo de pesos de clase $\rightarrow$ Obliga al modelo a enfocarse más en "No Fuego".
+    \item Se agregó ReduceLROnPlateau $\rightarrow$ Reduce la tasa de aprendizaje dinámicamente cuando el entrenamiento se ralentiza.
+\end{itemize}
