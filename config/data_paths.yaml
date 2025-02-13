@@ -1,7 +1,7 @@
 # Rutas principales del proyecto
-data_dir: "data"
-train_dir: "data/Training"
-test_dir: "data/Test"
+train_dir: "data/processed/Training"
+# val_dir: "data/processed/Validation"  # Si no cuentas con validación separada, puedes omitir esta línea
+test_dir: "data/processed/Test"
 
 # Información sobre clases
 classes:
