@@ -19,7 +19,6 @@ def resize_images(input_dir, output_dir, target_size=(224, 224)):
                 continue
             
             img_path = os.path.join(category_path, img_name)
-            
             try:
                 # Cargar la imagen
                 img = load_img(img_path)
