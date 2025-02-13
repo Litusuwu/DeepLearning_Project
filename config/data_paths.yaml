@@ -1,14 +1,11 @@
-# Rutas principales del proyecto
+# main routes
 train_dir: "data/processed/Training"
-# val_dir: "data/processed/Validation"  # Si no cuentas con validación separada, puedes omitir esta línea
 test_dir: "data/processed/Test"
 
-# Información sobre clases
 classes:
   - "fire"
   - "nofire"
 
-# Configuración de almacenamiento de resultados
 results_dir: "experiments/results"
 logs_dir: "experiments/logs"
 checkpoints_dir: "experiments/checkpoints"

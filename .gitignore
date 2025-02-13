@@ -34,3 +34,22 @@ data/external/
 # ===================================
 models/*.h5
 models/*.ckpt
+**/*.keras
+**/*.h5
+
+# ===================================
+# LaTeX
+# ===================================
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.fls
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+
+# *.pdf

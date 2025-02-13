@@ -25,8 +25,8 @@ def build_resnet_model(input_shape):
     return Model(inputs=base_model.input, outputs=predictions)
 
 if __name__ == '__main__':
-    train_config = load_config("configs/train_config_resnet.yaml")
-    data_config = load_config("configs/data_paths.yaml")
+    train_config = load_config("config/train_config_resnet.yaml")
+    data_config = load_config("config/data_paths.yaml")
 
     epochs = train_config.get("epochs", 10)
     batch_size = train_config.get("batch_size", 32)
@@ -92,20 +92,23 @@ if __name__ == '__main__':
 
     checkpoint_path = os.path.join(checkpoints_dir, "resnet_best.h5")
     csv_logger_path = os.path.join(logs_dir, "resnet_training.csv")
-    checkpoint = ModelCheckpoint(checkpoint_path, monitor=train_config.get("early_stopping", {}).get("monitor", "val_loss"),
-                                 save_best_only=True, verbose=1)
-    early_stopping = EarlyStopping(monitor=train_config.get("early_stopping", {}).get("monitor", "val_loss"),
-                                   patience=train_config.get("early_stopping", {}).get("patience", 3),
-                                   verbose=1)
+
+    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+
+    early_stopping_monitor = train_config.get("early_stopping", {}).get("monitor", "val_loss")
+    early_stopping_patience = train_config.get("early_stopping", {}).get("patience", 3)
+
+    early_stopping = EarlyStopping(monitor=early_stopping_monitor, patience=early_stopping_patience, verbose=1)
+
     csv_logger = CSVLogger(csv_logger_path)
     callbacks_list = [checkpoint, early_stopping, csv_logger]
 
     if validation_generator is not None:
         history = model.fit(
             train_generator,
-            steps_per_epoch=train_generator.samples // batch_size,
+            steps_per_epoch=max(1, train_generator.samples // batch_size),
             validation_data=validation_generator,
-            validation_steps=validation_generator.samples // batch_size,
+            validation_steps=max(1, validation_generator.samples // batch_size),
             epochs=epochs,
             callbacks=callbacks_list
         )
