@@ -1,0 +1,58 @@
+\begin{thebibliography}{1}
+
+\bibitem{Bot2022}
+Pablo Bot, Mauro Castelli, and Aleš Popovič.
+\newblock A systematic review of applications of machine learning techniques
+  for wildfire management decision support.
+\newblock {\em International Journal of Disaster Risk Reduction}, 71:102989,
+  2022.
+
+\bibitem{fire7040135}
+Mohamed Chetoui and Moulay~A. Akhloufi.
+\newblock Fire and smoke detection using fine-tuned yolov8 and yolov7 deep
+  models.
+\newblock \url{https://www.mdpi.com/2571-6255/7/4/135}, 2024.
+
+\bibitem{mobilevit2022}
+Sachin Mehta and Mohammad Rastegari.
+\newblock Mobilevit: Light-weight, general-purpose, and mobile-friendly vision
+  transformer.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2022.
+
+\bibitem{firesight2023}
+Amrita Palaparthi and Sharmila~Reddy Nangi.
+\newblock Firesight – wildfire detection through uav aerial image
+  classification.
+\newblock In {\em Conference on Computer Vision Applications for Wildfire
+  Monitoring}, 2023.
+
+\bibitem{sathishkumar_forest_2023}
+Veerappampalayam~Easwaramoorthy Sathishkumar, Jaehyuk Cho, Malliga Subramanian,
+  and Obuli~Sai Naren.
+\newblock Forest fire and smoke detection using deep learning-based learning
+  without forgetting.
+\newblock {\em Fire Ecology}, 19(1):9, February 2023.
+
+\bibitem{yaseen2024yolov8indepthexplorationinternal}
+Muhammad Yaseen.
+\newblock What is yolov8: An in-depth exploration of the internal features of
+  the next-generation object detector.
+\newblock \url{https://arxiv.org/abs/2408.15857}, 2024.
+
+\bibitem{s23208374}
+Norkobil~Saydirasulovich Saydirasulov, Mukhriddin Mukhiddinov, Oybek Djuraev,
+  Akmalbek Abdusalomov, and Young-Im Cho.
+\newblock An improved wildfire smoke detection based on yolov8 and uav images,
+  2023.
+
+\bibitem{FLAME_Dataset}
+Jeffrey~D. Graham, Matthew~B. Russell, David Rammer, and Joseph O'Brien.
+\newblock Flame dataset: Aerial imagery for pile burn detection using drones
+  ({UAVs}).
+\newblock
+  \url{https://ieee-dataport.org/open-access/flame-dataset-aerial-imagery-pile-burn-detection-using-drones-uavs},
+  2024.
+\newblock Accessed: 2024-01-30.
+
+\end{thebibliography}
