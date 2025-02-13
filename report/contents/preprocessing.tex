@@ -32,8 +32,28 @@ un resumen de los principales hallazgos:
           lo cual es coherente con la presencia de fuego y las altas temperaturas que generan tonos más cálidos.
           \item En contraste, las imágenes de la categoría \textbf{No\_Fire} exhiben distribuciones 
           de color más uniformes o predominio de tonos verdes y azules, lo que sugiere escenas más naturales 
-          o ambientes sin fuego.
+          o ambientes sin fuego. 
       \end{itemize}
+      Debajo se muestran algunos histogramas de dichas categorías:
+      \begin{figure}[htbp]
+        \centering
+        \begin{minipage}[b]{0.45\textwidth}
+          \centering
+          \includegraphics[width=\linewidth]{images/histograma_fire.png}
+          \vspace{0.5em}
+          \small\textbf{Fire}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[b]{0.45\textwidth}
+          \centering
+          \includegraphics[width=\linewidth]{images/histograma_no_fire.png}
+          \vspace{0.5em}
+          \small\textbf{No\_Fire}
+        \end{minipage}
+        \caption{Histogramas de color para las categorías \textbf{Fire} y \textbf{No\_Fire}.}
+        \label{fig:histograms}
+      \end{figure}
+
 \end{enumerate}
 
 \subsection{Redimensionamiento y Aumento de datos}
@@ -70,8 +90,26 @@ Las transformaciones utilizadas fueron:
 Para aplicarlo, se calculó el número de imágenes adicionales necesarias de tal forma que la cantidad de 
 imágenes en la clase \textbf{No\_Fire} sea equivalente a la de \textbf{Fire}. Luego, 
 el generador aplicó de forma iterativa estas transformaciones a cada imagen de la categoría \textbf{No\_Fire} y se 
-guardaron las nuevas imágenes en un directorio específico para datos aumentados.
+guardaron las nuevas imágenes en un directorio específico para datos aumentados. Debajo se muestra un 
+ejemplo de una imagen aumentada.
 
-
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{images/original.jpg}
+      \vspace{0.5em}
+      \small\textbf{Original}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{images/aumentada.jpg}
+      \vspace{0.5em}
+      \small\textbf{Aumentada}
+    \end{minipage}
+    \caption{Ejemplo de imagen original y su versión aumentada en la categoría \textbf{No\_Fire}.}
+    \label{fig:original_aumentada}
+  \end{figure}
 
 
