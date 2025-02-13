@@ -7,7 +7,7 @@ test_data:
 
 models_to_evaluate:
   - name: "DenseNet Model"
-    path: "src/evaluation/experiments/individual_models/densenet/results/model_20250213_114518.keras"
+    path: "src/evaluation/experiments/individual_models/densenet/results/model_20250213_131553.keras"
 
   # - name: "Xception Model"
   #   path: "experiments/individual_models/xception/results/xception_final.h5"

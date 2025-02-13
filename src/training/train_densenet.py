@@ -32,14 +32,14 @@ def build_densenet_model(input_shape):
     base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=input_shape)
     base_model.trainable = False  # freeze the base model
 
-    for i, layer in enumerate(base_model.layers[-5:]):
+    for i, layer in enumerate(base_model.layers[-10:]):
         layer.trainable = True
         print(f"Unfreezing Layer {i+1}: {layer.name}")
 
     x = GlobalAveragePooling2D()(base_model.output)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.3)(x)
 
-    predictions = Dense(1, activation='sigmoid', kernel_regularizer=l2(0.01))(x)
+    predictions = Dense(1, activation='sigmoid', kernel_regularizer=l2(1e-4))(x)
     return Model(inputs=base_model.input, outputs=predictions)
 
 if __name__ == '__main__':
@@ -74,7 +74,8 @@ if __name__ == '__main__':
         shear_range=train_config.get("augmentation", {}).get("shear_range", 0.0),
         zoom_range=train_config.get("augmentation", {}).get("zoom_range", 0.0),
         horizontal_flip=train_config.get("augmentation", {}).get("horizontal_flip", False),
-        rotation_range=20,
+        rotation_range=10,
+        brightness_range=[0.8, 1.2],
         validation_split=train_config.get("validation_split", 0.0)
     )
     test_datagen = ImageDataGenerator(rescale=1./255)
