@@ -101,3 +101,55 @@ mejorar el modelo y el entrenamiento de los demás en las siguientes iteraciones
     \item Se agregó balanceo de pesos de clase $\rightarrow$ Obliga al modelo a enfocarse más en "No Fuego".
     \item Se agregó ReduceLROnPlateau $\rightarrow$ Reduce la tasa de aprendizaje dinámicamente cuando el entrenamiento se ralentiza.
 \end{itemize}
+
+\subsubsection{Modelo 4 $\rightarrow$ Modelo 5}
+\begin{itemize}
+    \item Se introdujo \textbf{regularización L2} con un valor de \textbf{0.01} para reducir el sobreajuste penalizando pesos excesivamente altos.
+    \item Se agregó \textbf{data augmentation con rotaciones de hasta 20 grados} para mejorar la capacidad de generalización del modelo.
+    \item La precisión global no cambió significativamente, pero el \textbf{F1 Score mejoró} levemente y la estabilidad del modelo aumentó.
+    \item A pesar de estos cambios, el modelo aún tenía un **recall bajo en la clase "No Fuego"**.
+\end{itemize}
+
+\subsubsection{Modelo 5 $\rightarrow$ Modelo 6}
+\begin{itemize}
+    \item Se aumentó el número de \textbf{capas descongeladas a 10}, permitiendo un mayor ajuste fino de la red.
+    \item Se añadió \textbf{Dropout de 0.3} en las capas densas para reducir el sobreajuste y mejorar la robustez del modelo.
+    \item Se ajustó el \textbf{L2 a un valor más pequeño (1e-13)} para permitir mayor flexibilidad en la optimización sin sacrificar generalización.
+    \item Con estos cambios, el modelo alcanzó su \textbf{mejor precisión hasta ahora (61.40\%)} y el \textbf{mejor F1 Score (0.2152)}.
+    \item La \textbf{precisión y recall de "No Fuego"} también mejoraron significativamente, lo que indica un mejor balance en la clasificación.
+\end{itemize}
+
+\subsection{Comparación de Modelos}
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \resizebox{\textwidth}{!}{ % Resizes the table to fit the width
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline
+        \textbf{Métrica} & \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Modelo 3} & \textbf{Modelo 4} & \textbf{Modelo 5} & \textbf{Modelo 6} \\
+        & (Congelado) & (10 Capas) & (5 Capas) & (Balanceado) & (L2=0.01) & (10 Capas, L2=1e-13) \\
+        \hline
+        Precisión & 57.27\% & 57.27\% & 58.76\% & 58.48\% & 58.48\% & 61.40\% \\
+        \hline
+        F1 Score & 0.0386 & 0.0386 & 0.1012 & 0.0996 & 0.1033 & 0.2152 \\
+        \hline
+        R² Score & -0.7187 & -0.7187 & -0.5241 & -0.4149 & -0.4998 & -0.4499 \\
+        \hline
+        AUC-ROC & 0.7820 & 0.7820 & 0.8306 & 0.8293 & 0.8304 & 0.8324 \\
+        \hline
+        Precisión Fuego & 0.59 & 0.59 & 0.60 & 0.60 & 0.60 & 0.62 \\
+        \hline
+        Recall Fuego & 0.95 & 0.95 & 0.95 & 0.94 & 0.94 & 0.94 \\
+        \hline
+        Precisión No Fuego & 0.21 & 0.21 & 0.42 & 0.40 & 0.40 & 0.60 \\
+        \hline
+        Recall No Fuego & 0.02 & 0.02 & 0.06 & 0.06 & 0.06 & 0.13 \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Comparación de métricas de evaluación entre diferentes modelos entrenados.}
+    \label{tab:evaluation_metrics}
+\end{table}
+
+

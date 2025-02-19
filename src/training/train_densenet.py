@@ -12,13 +12,6 @@ from tensorflow.keras.optimizers import Adam
 import numpy as np
 from datetime import datetime
 
-gpus = tf.config.list_physical_devices("GPU")
-if gpus:
-    print("GPU Available:", gpus)
-    tf.config.experimental.set_memory_growth(gpus[0], True)
-else:
-    print("No GPU detected, using CPU.")
-
 # utility functions
 def load_config(config_path):
     with open(config_path, 'r') as f:
@@ -132,7 +125,6 @@ if __name__ == '__main__':
 
     # training
     if validation_generator is not None:
-
         class_weights = compute_class_weight('balanced', classes=np.array([0, 1]), y=train_generator.classes)
         class_weight_dict = {i: class_weights[i] for i in range(len(class_weights))}
 
@@ -154,8 +146,5 @@ if __name__ == '__main__':
         )
 
     # save the final model
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    model_name = f"model_{timestamp}.keras"
-    final_model_path = os.path.join(results_dir, model_name)
-    model.save(final_model_path)
-    print("DenseNet Model saved on:", final_model_path)
+    model.save(os.path.join(results_dir, f"model_{datetime.now().strftime('%Y%m%d_%H%M%S')}.keras"))
+    print("Model training complete.")
