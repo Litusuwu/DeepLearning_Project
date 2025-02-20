@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report, accuracy_score, f1_score, roc
 
 # === CONFIGURACIONES ===
 input_shape = (224, 224, 3)  # Mismo input que en el entrenamiento
-model_path = "src/training/experiments/individual_models/resnet/checkpoints/trial_02/best_model.keras"  # Reemplaza con tu modelo .keras
+model_path = "src/training/experiments/individual_models/resnet/checkpoints/trial_04/best_model.keras"  # Reemplaza con tu modelo .keras
 
 # === PASO 1: CARGAR EL MODELO GUARDADO ===
 model = tf.keras.models.load_model(model_path)
