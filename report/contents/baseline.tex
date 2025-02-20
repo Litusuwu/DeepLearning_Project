@@ -1,0 +1,25 @@
+\section{Baseline}
+
+Nuestro modelo se basa en el trabajo realizado por Palaparthi y Nangi en el 
+proyecto FireSight de Stanford, el cual propone un enfoque de clasificación
+binaria para la detección de incendios en imágenes aéreas capturadas por drones.
+En su estudio, los autores comparan el desempeño de redes convolucionales profundas (CNN) 
+con modelos basados en Transformers, implementando técnicas de aumento de datos y 
+estrategias de ensamble para mejorar la precisión del modelo.
+
+Como baseline, tomamos la arquitectura de FireSight, la cual alcanza una 
+precisión del 82.28\% mediante un ensamble de modelos CNN (DenseNet y ResNet) 
+y Transformers (ViT). El modelo de Stanford evalúa diferentes estrategias de
+combinación de características y probabilidad para mejorar la clasificación entre
+imágenes con y sin fuego, y además explora la compresión de modelos para una posible
+implementación en dispositivos con recursos limitados, como UAVs.
+
+Dado que las CNNs utilizadas en FireSight no lograron igualar el 
+rendimiento de los Transformers en la detección de incendios,
+nuestro trabajo se centra en mejorar los resultados de los modelos
+CNN mediante un ensamble optimizado de Xception, DenseNet y ResNet.
+
+Además, una vez obtenido el mejor modelo de ensamble, aplicaremos
+knowledge distillation con MobileNetV3, buscando reducir el tamaño del
+modelo sin perder precisión, para su posible implementación en
+sistemas de detección en tiempo real.
