@@ -13,7 +13,7 @@ models_to_evaluate:
   #   path: "experiments/individual_models/xception/results/xception_final.h5"
 
   - name: "ResNet Model"
-    path: "src/training/experiments/individual_models/resnet/checkpoints/trial_02/best_model.keras"
+    path: "src/training/experiments/individual_models/xception/best_model.keras"
 
 metrics:
   threshold: 0.5
