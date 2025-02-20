@@ -1,11 +1,24 @@
 import os
 import yaml
+import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Para métricas y curva ROC
 from metrics import compute_metrics, plot_roc_curve
+
+def load_model_from_weights(config_path, weights_path):
+    """Load a model architecture from JSON and apply weights."""
+    with open(config_path, "r") as f:
+        model_config = json.load(f)
+
+    if "config" in model_config:
+        model_config = model_config["config"]  # Extract correct model structure
+
+    model = tf.keras.models.model_from_json(json.dumps(model_config))
+    model.load_weights(weights_path)  # Load weights
+    return model
 
 def load_config(config_path: str) -> dict:
     """Carga un archivo YAML y retorna un diccionario con la configuración."""
@@ -52,10 +65,20 @@ if __name__ == "__main__":
         model_name = model_info["name"]
         model_path = model_info["path"]
 
-        if model_path.endswith(".keras") or model_path.endswith(".h5"):
-            model = tf.keras.models.load_model(model_path) # load model
+        if model_path.endswith(".h5"):
+            config_path = os.path.join(os.path.dirname(model_path), "build_config.json")
+            if not os.path.exists(config_path):
+                print(f"⚠️ No build_config.json found for {model_name}. Skipping.")
+                continue
+
+            model = load_model_from_weights(config_path, model_path)
             print(f"\n=== Evaluating {model_name} ===")
-            print(f"Model in: {model_path}")
+            print(f"Model loaded from weights: {model_path}")
+
+        elif model_path.endswith(".keras"):
+            model = tf.keras.models.load_model(model_path)
+            print(f"\n=== Evaluating {model_name} ===")
+            print(f"Model loaded from: {model_path}")
         else:
             print(f"⚠️ Unsupported model format: {model_path}. Skipping.")
             continue

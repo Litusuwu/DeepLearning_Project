@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 .ipynb_checkpoints/
 .DS_Store
+.idea
 Thumbs.db
 
 # ===================================
@@ -15,6 +16,7 @@ venv/
 .venv/
 env/
 .conda/
+fire_detection_env/
 env.yaml
 
 # ===================================
@@ -27,8 +29,8 @@ logs/
 # Datos
 # ===================================
 data/raw/
-data/processed/
-data/external/
+data/resized/
+data/augmented/
 # ===================================
 # Modelos entrenados
 # ===================================
