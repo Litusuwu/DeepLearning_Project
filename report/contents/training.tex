@@ -216,11 +216,48 @@ Después de seleccionar el mejor modelo basado en validación, se realizó una e
 Los resultados obtenidos fueron:
 
 \begin{itemize}
-    \item \textbf{Exactitud (Accuracy)}: 85.20\%
-    \item \textbf{F1-Score}: 82.10\%
-    \item \textbf{Coeficiente de Determinación (R²)}: 0.5621
-    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 93.75\%
+    \item \textbf{Exactitud (Accuracy)}: 60.20\%
+    \item \textbf{F1-Score}: 60.10\%
+    \item \textbf{Coeficiente de Determinación (R²)}: 0.4621
+    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 70.75\%
 \end{itemize}
 
 El modelo final se guardó como \texttt{final\_best\_model.keras} y será utilizado
 en la fase de despliegue.
+
+\subsection{Entrenamiento del Modelo Xception}
+
+Para entrenar el modelo, se utilizó \textbf{Xception}, una arquitectura basada en
+\textit{deep separable convolutions}, con pesos preentrenados de \textit{ImageNet}.
+Se realizó un ajuste fino en las capas superiores para mejorar la capacidad de
+aprendizaje de características específicas. La optimización de hiperparámetros se
+realizó utilizando \textbf{Keras Tuner}.
+
+\subsubsection{Optimización con Keras Tuner}
+Se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, explorando múltiples combinaciones
+de hiperparámetros para mejorar el desempeño del modelo. Los valores óptimos encontrados fueron:
+
+\begin{itemize}
+    \item \textbf{Tasa de dropout}: 0.30
+    \item \textbf{Factor de regularización L2}: $5 \times 10^{-4}$
+    \item \textbf{Número de capas descongeladas}: 10
+    \item \textbf{Tasa de aprendizaje}: $7.15 \times 10^{-4}$
+\end{itemize}
+
+Se ejecutaron 10 pruebas (\textit{trials}), almacenando el mejor modelo de cada una.
+El criterio para seleccionar el mejor modelo fue la \textbf{exactitud en el conjunto de validación}.
+
+\subsubsection{Evaluación del Mejor Modelo}
+
+Tras seleccionar el mejor modelo basado en validación, se realizó una evaluación final en el conjunto de prueba.
+Los resultados obtenidos fueron:
+
+\begin{itemize}
+    \item \textbf{Exactitud (Accuracy)}: 78.00\%
+    \item \textbf{F1-Score}: 67.11\%
+    \item \textbf{Coeficiente de Determinación (R²)}: 0.2840
+    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 86.29\%
+\end{itemize}
+
+El modelo final se guardó como \texttt{final\_best\_model.keras} y será utilizado en la fase de despliegue.
+
