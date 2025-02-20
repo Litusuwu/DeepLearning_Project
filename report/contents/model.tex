@@ -80,3 +80,15 @@ Para reducir aún más el tamaño del modelo, se aplicará \textit{pruning}, eli
     \end{itemize}
 \end{itemize}
 
+\subsection{Pipeline}
+El flujo de producción está diseñado para ejecutar una secuencia de cinco pasos que garantizan reproducibilidad y eficiencia. Estos pasos son:
+
+\begin{enumerate}
+    \item \textbf{Entrenamiento de DenseNet:} El modelo DenseNet se entrena utilizando hiperparámetros fijos y ajustados.
+    \item \textbf{Entrenamiento de ResNet:} De manera similar, el modelo ResNet se entrena con sus mejores hiperparámetros.
+    \item \textbf{Entrenamiento de Xception:} El modelo Xception se entrena bajo el mismo enfoque.
+    \item \textbf{Ensamblado de modelos:} Las predicciones de los tres modelos entrenados se promedian para construir un modelo en ensamblado.
+    \item \textbf{Destilación del modelo:} El modelo ensamblado actúa como maestro para destilar el conocimiento en un modelo estudiante más ligero.
+\end{enumerate}
+
+El script de bash (ubicado en \texttt{scripts/run\_pipeline.sh}) orquesta el flujo de trabajo.

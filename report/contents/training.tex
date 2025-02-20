@@ -152,4 +152,75 @@ mejorar el modelo y el entrenamiento de los demás en las siguientes iteraciones
     \label{tab:evaluation_metrics}
 \end{table}
 
+\subsection{Entrenamiento del Modelo DenseNet}
 
+Para entrenar el modelo, se utilizó \textbf{DenseNet121} con pesos preentrenados de
+\textit{ImageNet}, aplicando ajuste fino en sus capas superiores para mejorar su
+capacidad de extracción de características. La optimización de hiperparámetros se
+realizó utilizando \textbf{Keras Tuner}, permitiendo encontrar la mejor combinación
+de valores para maximizar el rendimiento del modelo en la tarea de clasificación.
+
+\subsubsection{Optimización con Keras Tuner}
+Para encontrar la mejor configuración del modelo, se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, explorando distintas combinaciones de hiperparámetros:
+
+\begin{itemize}
+    \item \textbf{Tasa de dropout}: 0.35
+    \item \textbf{Factor de regularización L2}: $1 \times 10^{-3}$
+    \item \textbf{Número de capas descongeladas}: 20
+    \item \textbf{Tasa de aprendizaje}: $1.047 \times 10^{-3}$
+\end{itemize}
+
+Se realizaron 10 experimentos (\textit{trials}), almacenando el mejor modelo de
+cada uno. El mejor modelo se determinó en función de la \textbf{exactitud en el
+conjunto de validación}.
+
+\subsubsection{Resultados del Mejor Modelo}
+El modelo con los hiperparámetros óptimos obtuvo los siguientes resultados en el
+conjunto de testeo:
+
+\begin{itemize}
+    \item \textbf{Exactitud (Accuracy)}: 86.50\%
+    \item \textbf{F1-Score}: 83.24\%
+    \item \textbf{Coeficiente de Determinación (R²)}: 0.5798
+    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 94.60\%
+\end{itemize}
+
+El modelo final se guardó como \texttt{final\_best\_model.keras} y se usaron para
+la fase de ensamble despliegue.
+
+\subsection{Entrenamiento del Modelo ResNet}
+
+Para entrenar el modelo, se utilizó \textbf{ResNet50} con pesos preentrenados de
+\textit{ImageNet}, permitiendo el ajuste fino de ciertas capas para mejorar su
+capacidad de generalización. La optimización de hiperparámetros se realizó
+utilizando \textbf{Keras Tuner}.
+
+\subsubsection{Optimización con Keras Tuner}
+Se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, evaluando distintas
+combinaciones de hiperparámetros. Los mejores valores obtenidos fueron:
+
+\begin{itemize}
+    \item \textbf{Tasa de dropout}: 0.40
+    \item \textbf{Factor de regularización L2}: $5 \times 10^{-4}$
+    \item \textbf{Número de capas descongeladas}: 15
+    \item \textbf{Tasa de aprendizaje}: $8.23 \times 10^{-4}$
+\end{itemize}
+
+Se ejecutaron 10 pruebas (\textit{trials}), almacenando el mejor modelo de cada una.
+El criterio para seleccionar el mejor modelo fue la \textbf{exactitud en el conjunto de
+validación}.
+
+\subsubsection{Evaluación del Mejor Modelo}
+
+Después de seleccionar el mejor modelo basado en validación, se realizó una evaluación final en el conjunto de prueba.
+Los resultados obtenidos fueron:
+
+\begin{itemize}
+    \item \textbf{Exactitud (Accuracy)}: 85.20\%
+    \item \textbf{F1-Score}: 82.10\%
+    \item \textbf{Coeficiente de Determinación (R²)}: 0.5621
+    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 93.75\%
+\end{itemize}
+
+El modelo final se guardó como \texttt{final\_best\_model.keras} y será utilizado
+en la fase de despliegue.
