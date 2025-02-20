@@ -107,7 +107,7 @@ if __name__ == '__main__':
     )
 
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="best_model.keras",  # Specify `.h5` directly if using HDF5 format
+        filepath="xception_final.keras",  # Specify `.h5` directly if using HDF5 format
         monitor="val_loss",
         save_best_only=True,
         mode='max',

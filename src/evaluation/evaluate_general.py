@@ -4,8 +4,6 @@ import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-# Para métricas y curva ROC
 from metrics import compute_metrics, plot_roc_curve
 
 def load_model_from_weights(config_path, weights_path):
@@ -59,6 +57,10 @@ if __name__ == "__main__":
     idx_to_class = {v: k for k, v in test_generator.class_indices.items()}
     # Ejemplo: 0 -> 'fire', 1 -> 'nofire'
     ordered_classes = [idx_to_class[i] for i in range(len(idx_to_class))]
+
+    # Set up TensorBoard summary writer for logging evaluation metrics
+    log_dir = "logs/evaluation"
+    summary_writer = tf.summary.create_file_writer(log_dir)
 
     # 7. Evaluar cada modelo
     for model_info in models_info:
@@ -118,6 +120,13 @@ if __name__ == "__main__":
             threshold=threshold,
             class_labels=ordered_classes
         )
+
+        # Log metrics to TensorBoard
+        with summary_writer.as_default():
+            tf.summary.scalar(f"{model_name}/Accuracy", metrics_dict['Accuracy'], step=0)
+            tf.summary.scalar(f"{model_name}/F1_Score", metrics_dict['F1 Score'], step=0)
+            tf.summary.scalar(f"{model_name}/R2_Score", metrics_dict['R² Score'], step=0)
+            tf.summary.scalar(f"{model_name}/AUC_ROC", metrics_dict['AUC-ROC'], step=0)
 
         # 9. Mostrar métricas
         print(f"Accuracy: {metrics_dict['Accuracy']:.4f}")

@@ -59,7 +59,7 @@ class CustomTuner(kt.RandomSearch):
             metrics=['accuracy']
         )
         
-        model_save_path = os.path.join(trial_dir, "best_model.keras")
+        model_save_path = os.path.join(trial_dir, "xception_final.keras")
         best_model.save(model_save_path)
         
         weights_save_path = os.path.join(trial_dir, "checkpoint.weights.h5")

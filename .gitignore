@@ -31,6 +31,7 @@ logs/
 data/raw/
 data/resized/
 data/augmented/
+data/processed/
 # ===================================
 # Modelos entrenados
 # ===================================

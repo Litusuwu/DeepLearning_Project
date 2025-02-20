@@ -3,29 +3,31 @@ import json
 import yaml
 import tensorflow as tf
 import keras_tuner as kt
+
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import ResNet50
+# IMPORTAR ResNet101
+from tensorflow.keras.applications.resnet import ResNet101
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
 
 def load_config(config_path):
-    """Carga un archivo YAML y retorna un dict con su contenido."""
+    """Carga un archivo YAML y lo retorna como un dict."""
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
 def ensure_dir(path):
-    """Crea el directorio (y subdirectorios) si no existe."""
+    """Crea el directorio y subdirectorios si no existe."""
     if not os.path.exists(path):
         os.makedirs(path)
 
 def build_model(hp, input_shape):
     """
-    Construye el modelo ResNet50 con hiperparámetros ajustables:
+    Construye el modelo ResNet101 con hiperparámetros ajustables:
     - dropout_rate (0.2 a 0.5 con step 0.05)
     - l2_factor (1e-4, 5e-4 o 1e-3)
-    - n_layers_to_unfreeze (de 5 a 20, step de 5)
+    - n_layers_to_unfreeze (5, 10, 15, 20)
     - learning_rate (1e-4 a 1e-2 en log scale)
     """
     dropout_rate = hp.Float('dropout_rate', min_value=0.2, max_value=0.5, step=0.05, default=0.3)
@@ -33,8 +35,8 @@ def build_model(hp, input_shape):
     n_layers_to_unfreeze = hp.Int('n_layers_to_unfreeze', min_value=5, max_value=20, step=5, default=10)
     learning_rate = hp.Float('learning_rate', min_value=1e-4, max_value=1e-2, sampling='log', default=1e-4)
     
-    # Cargar ResNet50 preentrenado en ImageNet
-    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=input_shape)
+    # USAR ResNet101 en lugar de ResNet50
+    base_model = ResNet101(weights='imagenet', include_top=False, input_shape=input_shape)
     base_model.trainable = False
 
     # Descongelar las últimas n capas
@@ -45,10 +47,14 @@ def build_model(hp, input_shape):
     x = GlobalAveragePooling2D()(base_model.output)
     x = Dropout(dropout_rate)(x)
     predictions = Dense(1, activation='sigmoid', kernel_regularizer=l2(l2_factor))(x)
-    model = Model(inputs=base_model.input, outputs=predictions)
     
+    model = Model(inputs=base_model.input, outputs=predictions)
     optimizer = Adam(learning_rate=learning_rate)
-    model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(
+        optimizer=optimizer,
+        loss='binary_crossentropy',
+        metrics=['accuracy']
+    )
     return model
 
 class CustomTuner(kt.RandomSearch):
@@ -61,7 +67,7 @@ class CustomTuner(kt.RandomSearch):
     """
     def on_trial_end(self, trial):
         trial_id = trial.trial_id
-        # Directorio base para guardar modelos
+        
         script_dir = os.path.dirname(os.path.abspath(__file__))
         experiments_dir = os.path.abspath(os.path.join(script_dir, "experiments/individual_models/resnet"))
         trial_dir = os.path.join(experiments_dir, "checkpoints", f"trial_{trial_id}")
@@ -100,7 +106,6 @@ class CustomTuner(kt.RandomSearch):
             json.dump(trial_info, f, indent=4)
         
         print(f"📊 Información guardada para Trial {trial_id}")
-        
         # Llamar al método base
         super().on_trial_end(trial)
 
@@ -116,10 +121,8 @@ if __name__ == '__main__':
     batch_size = train_config.get("batch_size", 8)
     input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
     train_dir = data_config.get("train_dir", "data/processed/Training")
-    
     validation_split = train_config.get("validation_split", 0.0)
-    
-    # Crear directorios de logs
+
     experiments_dir = os.path.abspath(os.path.join(script_dir, "experiments/individual_models/resnet"))
     logs_dir = os.path.join(experiments_dir, "logs")
     ensure_dir(logs_dir)
@@ -163,13 +166,12 @@ if __name__ == '__main__':
     tuner = CustomTuner(
         hypermodel=lambda hp: build_model(hp, input_shape),
         objective='val_accuracy',
-        max_trials=10,         # Número de combinaciones a probar
+        max_trials=10,
         executions_per_trial=1,
         directory='kt_tuner_dir',
         project_name='resnet_tuning'
     )
 
-    # Callback EarlyStopping
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 
     # Realizar la búsqueda de hiperparámetros
@@ -181,7 +183,6 @@ if __name__ == '__main__':
             callbacks=[early_stop]
         )
     else:
-        # Si no hay validación, se monitoriza 'loss'
         tuner.search(
             train_generator,
             epochs=epochs,
@@ -189,5 +190,3 @@ if __name__ == '__main__':
         )
     
     print("✅ Proceso de tuning finalizado. Modelos guardados por trial en 'experiments/individual_models/resnet/checkpoints/'")
-
-
