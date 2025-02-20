@@ -1,19 +1,19 @@
 test_data:
-  directory: "data/processed/Test"
+  directory: "data/raw/Test"
   img_height: 224
   img_width: 224
   batch_size: 32
   class_mode: "binary"
 
 models_to_evaluate:
-  - name: "DenseNet Model"
-    path: "src/evaluation/experiments/individual_models/densenet/results/model_20250213_131553.keras"
+  # - name: "DenseNet Model"
+  #   path: "src/training/experiments/individual_models/resnet/checkpoints/trial_08/best_model.keras"
 
   # - name: "Xception Model"
   #   path: "experiments/individual_models/xception/results/xception_final.h5"
 
-  # - name: "ResNet Model"
-  #   path: "experiments/individual_models/resnet/results/resnet_final.h5"
+  - name: "ResNet Model"
+    path: "src/training/experiments/individual_models/resnet/checkpoints/trial_02/best_model.keras"
 
 metrics:
   threshold: 0.5

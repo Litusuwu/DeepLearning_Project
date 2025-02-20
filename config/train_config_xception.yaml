@@ -1,19 +1,51 @@
-# configs/train_config_xception.yaml
-epochs: 10
-batch_size: 32
+# Training and model configuration for Xception-based wildfire classification
+
+# Number of epochs and batch size
+epochs: 20             
+batch_size: 10        
+
+# Input shape for the model (typically [height, width, channels])
 input_shape: [224, 224, 3]
+
+# Optimizer and learning rate settings
 optimizer: "adam"
+learning_rate: 0.0001  
+
+# Loss function and evaluation metrics
 loss: "binary_crossentropy"
 metrics:
   - "accuracy"
+
+# Data augmentation parameters to improve generalization
 augmentation:
-  shear_range: 0.2
+  shear_range: 0.1
   zoom_range: 0.2
   horizontal_flip: true
+  rotation_range: 15
+  brightness_range: [0.8, 1.2]
+
+# Split a portion of the training data for validation
 validation_split: 0.2
+
+# Early stopping configuration: stops training if no improvement in validation loss
 early_stopping:
   monitor: "val_loss"
+  patience: 5
+
+# Learning rate reduction on plateau: reduce LR if validation loss stops improving
+reduce_lr_on_plateau:
+  monitor: "val_loss"
+  factor: 0.1
   patience: 3
+  min_lr: 0.00001
+
+# GPU optimization settings: enable mixed precision and XLA for accelerated training
+gpu_optimization:
+  mixed_precision: true  
+  xla_enabled: true  
+  max_layers_unfreeze: 30  
+
+# Directories for saving logs, checkpoints, and results
 output_dirs:
   logs: "experiments/individual_models/xception/logs"
   checkpoints: "experiments/individual_models/xception/checkpoints"

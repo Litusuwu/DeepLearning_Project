@@ -1,34 +1,47 @@
 name: fire_detection_env
+
 channels:
   - defaults
   - conda-forge
+  - pytorch
+
 dependencies:
   - python=3.8
   - pip
+  - numpy>=1.23
+  - scipy>=1.9
+  - pillow
+  - matplotlib
+  - tqdm
+  - h5py>=3.7
+  - pandas
+  - scikit-learn
+  - seaborn
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.4  
+
+  - tensorflow
+  - keras
   - pip:
-    - absl-py==1.4.0
-    - astor==0.8.1
-    - certifi==2021.5.30
-    - dataclasses==0.8
-    - gast==0.2.2
-    - google-pasta==0.2.0
-    - grpcio==1.48.2
-    - h5py==2.10.0
-    - importlib-metadata==4.8.3
-    - Keras-Applications==1.0.8
-    - Keras-Preprocessing==1.1.2
-    - Markdown==3.3.7
-    - numpy==1.18.5
-    - opt-einsum==3.3.0
-    - Pillow==8.4.0
-    - protobuf==3.19.6
-    - scipy==1.5.4
-    - six==1.17.0
-    - tensorboard==1.15.0
-    - tensorflow-directml==1.15.8
-    - tensorflow-estimator==1.15.1
-    - termcolor==1.1.0
-    - typing_extensions==4.1.1
-    - Werkzeug==2.0.3
-    - wrapt==1.16.0
-    - zipp==3.6.0
+      - absl-py==1.4.0
+      - astor==0.8.1
+      - certifi==2021.5.30
+      - dataclasses==0.8
+      - gast==0.2.2
+      - google-pasta==0.2.0
+      - grpcio==1.48.2
+      - importlib-metadata==4.8.3
+      - Keras-Applications==1.0.8
+      - Keras-Preprocessing==1.1.2
+      - Markdown==3.3.7
+      - protobuf==3.19.6
+      - tensorboard==1.15.0
+      - tensorflow-directml==1.15.8
+      - tensorflow-estimator==1.15.1
+      - termcolor==1.1.0
+      - typing_extensions==4.1.1
+      - Werkzeug==2.0.3
+      - wrapt==1.16.0
+      - zipp==3.6.0

@@ -1,6 +1,6 @@
 # main routes
-train_dir: "data/processed/Training"
-test_dir: "data/processed/Test"
+train_dir: "data/raw/Training"
+test_dir: "data/raw/Test"
 
 classes:
   - "fire"

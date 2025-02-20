@@ -1,65 +1,86 @@
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 import os
 import math
 from PIL import Image
+import torch
+import torchvision.transforms as transforms
 
-# Configuración de aumentación
-datagen = ImageDataGenerator(
-    rotation_range=30,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest'
-)
+# Definir transformaciones corregidas para CNN y ViT
 
-# Rutas: asegúrate de que estas rutas sean las correctas en tu estructura de carpetas
-no_fire_dir = "data/processed/Training/No_Fire_Resized"
-output_dir = "data/processed/Training/No_Fire"
-os.makedirs(output_dir, exist_ok=True)
+cnn_transforms = transforms.Compose([
+    transforms.RandomHorizontalFlip(p=0.5),  
+    transforms.RandomRotation(degrees=(-7, 7), fill=0),  
+    transforms.ColorJitter(brightness=(0.8, 1.1), contrast=(0.8, 1.1), saturation=(0.8, 1.1)),  # 🔹 Mejora el brillo
+    transforms.Resize((224, 224)),  
+    transforms.RandomGrayscale(p=0.05), 
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  
+])
 
-# Número total deseado de imágenes para la clase "No_Fire"
-target_no_fire = 50000 
-# Cantidad de imágenes originales en la carpeta
-current_no_fire = len(os.listdir(no_fire_dir))
-# Número de imágenes adicionales que queremos generar
-images_to_generate = target_no_fire - current_no_fire
+vit_transforms = transforms.Compose([
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(degrees=(-7, 7), fill=0),  
+    transforms.ColorJitter(brightness=(0.8, 1.1), contrast=(0.8, 1.1), saturation=(0.8, 1.1)),  
+    transforms.Resize((224, 224)),
+    transforms.RandomGrayscale(p=0.05),  
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]) 
+])
 
-if current_no_fire == 0:
-    raise ValueError(f"No se encontraron imágenes en {no_fire_dir}.")
+# Función para aplicar aumentación y guardar imágenes
+def data_augmentation(input_dir, output_dir, transformation, target_size):
+    os.makedirs(output_dir, exist_ok=True)
 
-# Calcula cuántas augmentaciones se deben generar por cada imagen original
-augmentations_per_image = math.ceil(images_to_generate / current_no_fire)
-print(f"Imágenes originales en No_Fire: {current_no_fire}")
-print(f"Objetivo: {target_no_fire} imágenes.")
-print(f"Generando aproximadamente {augmentations_per_image} augmentaciones por imagen.")
+    # Obtener lista de imágenes en la carpeta
+    images_list = [f for f in os.listdir(input_dir) if f.lower().endswith(('.jpg', '.png'))]
+    current = len(images_list)
 
-generated = 0
-# Itera sobre cada imagen original
-for img_name in os.listdir(no_fire_dir):
-    img_path = os.path.join(no_fire_dir, img_name)
-    try:
-        # Cargar la imagen
-        img = load_img(img_path)
-    except Exception as e:
-        print(f"Error al cargar {img_path}: {e}")
-        continue
+    if current == 0:
+        raise ValueError(f"No se encontraron imágenes en {input_dir}.")
 
-    # Convertir la imagen a array y darle la forma correcta para el generador
-    img_array = img_to_array(img)
-    img_array = img_array.reshape((1,) + img_array.shape)
+    images_to_generate = target_size - current
+    augmentations_per_image = images_to_generate // current  # Mejor control sobre cuántas generar
+    remaining_images = images_to_generate % current  # Para distribuir si no es exacto
 
-    count = 0
-    # Genera un número fijo de imágenes augmentadas para esta imagen original
-    for batch in datagen.flow(img_array, batch_size=1,
-                              save_to_dir=output_dir,
-                              save_prefix='aug',
-                              save_format='jpeg'):
-        count += 1
-        generated += 1
-        print(f"Generadas {generated} imagen(es) a partir de {img_name}")
-        if count >= augmentations_per_image:
-            break  # Pasa a la siguiente imagen original
+    print(f"Procesando {input_dir}")
+    print(f"- Imágenes originales: {current}")
+    print(f"- Objetivo: {target_size} imágenes")
+    print(f"- Augmentaciones por imagen: {augmentations_per_image}")
 
-print(f"Aumentación completada. Nuevas imágenes generadas: {generated}")
+    generated = 0
+    unique_id = 1  # ID único para nombres de archivo
+
+    for i, img_name in enumerate(images_list):
+        img_path = os.path.join(input_dir, img_name)
+        try:
+            img = Image.open(img_path).convert("RGB")  # Cargar imagen en RGB
+        except Exception as e:
+            print(f"Error al cargar {img_path}: {e}")
+            continue
+
+        total_augmentations = augmentations_per_image + (1 if i < remaining_images else 0)  # Distribuir imágenes extra
+
+        for _ in range(total_augmentations):
+            augmented_img = transformation(img)  # Aplicar transformación
+            augmented_img = transforms.functional.to_pil_image(augmented_img)  # Convertir tensor a PIL
+            augmented_img.save(os.path.join(output_dir, f"aug_{unique_id}.jpg"))  # Guardar imagen aumentada
+            unique_id += 1
+            generated += 1
+            if generated >= images_to_generate:
+                break  # Salir si se alcanza el objetivo
+
+    print(f"Aumentación completada: {generated} nuevas imágenes generadas en {output_dir}.\n")
+
+# Definir rutas de entrada y salida
+train_in_dir_fire = "resized/Training/Fire"
+train_out_dir_fire_cnn = "augmented/CNN/Training/Fire"
+train_out_dir_fire_vit = "augmented/VIT/Training/Fire"
+
+train_in_dir_no_fire = "resized/Training/No_Fire"
+train_out_dir_no_fire_cnn = "augmented/CNN/Training/No_Fire"
+train_out_dir_no_fire_vit = "augmented/VIT/Training/No_Fire"
+
+# Ejecutar aumentación para cada conjunto
+data_augmentation(train_in_dir_fire, train_out_dir_fire_cnn, cnn_transforms, 50036)
+data_augmentation(train_in_dir_fire, train_out_dir_fire_vit, vit_transforms, 50036)
+data_augmentation(train_in_dir_no_fire, train_out_dir_no_fire_cnn, cnn_transforms, 28714)
+data_augmentation(train_in_dir_no_fire, train_out_dir_no_fire_vit, vit_transforms, 28714)

@@ -1,19 +1,56 @@
 # configs/train_config_densenet.yaml
-epochs: 10
-batch_size: 8
+# epochs: 10
+# batch_size: 8
+# input_shape: [224, 224, 3]
+# optimizer: "adam"
+# loss: "binary_crossentropy"
+# metrics:
+#   - "accuracy"
+# augmentation:
+#   shear_range: 0.1
+#   zoom_range: 0.2
+#   horizontal_flip: true,
+# validation_split: 0.2
+# early_stopping:
+#   monitor: "val_loss"
+#   patience: 3
+# output_dirs:
+#   logs: "experiments/individual_models/densenet/logs"
+#   checkpoints: "experiments/individual_models/densenet/checkpoints"
+#   results: "experiments/individual_models/densenet/results"
+# Configuración de entrenamiento para DenseNet
+epochs: 20  # Aumentamos las epochs para mayor entrenamiento
+batch_size: 64  # Usamos un batch size más grande para aprovechar la RAM/GPU
 input_shape: [224, 224, 3]
 optimizer: "adam"
+learning_rate: 0.0001  # Explicitamos el learning rate para ajuste fino
 loss: "binary_crossentropy"
 metrics:
   - "accuracy"
+
+# Data augmentation para mejorar la generalización
 augmentation:
   shear_range: 0.1
   zoom_range: 0.2
-  horizontal_flip: true,
-validation_split: 0.2
+  horizontal_flip: true
+  rotation_range: 15  # Agregamos rotación para mayor variabilidad
+  brightness_range: [0.8, 1.2]  # Ajuste en brillo
+
+validation_split: 0.2  # 20% de los datos se usarán para validación
+
+# Configuración de Early Stopping para detener el entrenamiento si no hay mejoras
 early_stopping:
   monitor: "val_loss"
+  patience: 5  # Permitimos más epochs antes de detener
+
+# Reducción de tasa de aprendizaje si el modelo deja de mejorar
+reduce_lr_on_plateau:
+  monitor: "val_loss"
+  factor: 0.1
   patience: 3
+  min_lr: 0.00001  # No bajar más allá de este límite
+
+# Configuración de almacenamiento de logs y modelos
 output_dirs:
   logs: "experiments/individual_models/densenet/logs"
   checkpoints: "experiments/individual_models/densenet/checkpoints"

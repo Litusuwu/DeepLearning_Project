@@ -6,7 +6,7 @@ from PIL import Image
 def resize_images(input_dir, output_dir, target_size=(224, 224)):
     os.makedirs(output_dir, exist_ok=True)
     
-    valid_extensions = ('.jpg', '.jpeg', '.png')
+    valid_extensions = ('.jpg', '.png')
     
     for category in os.listdir(input_dir):
         category_path = os.path.join(input_dir, category)
@@ -34,11 +34,11 @@ def resize_images(input_dir, output_dir, target_size=(224, 224)):
     print(f"Redimensionamiento completado en: {output_dir}")
 
 # Rutas (ajusta según la estructura de tu proyecto)
-train_dir = "data/raw/Training"
-test_dir  = "data/raw/Test"
+train_dir = "raw/Training"
+test_dir  = "raw/Test"
 
-train_resized_dir = "data/processed/Training"
-test_resized_dir = "data/processed/Test"
+train_resized_dir = "resized/Training"
+test_resized_dir = "resized/Test"
 
 # Redimensionar imágenes
 resize_images(train_dir, train_resized_dir)
