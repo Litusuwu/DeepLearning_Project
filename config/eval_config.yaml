@@ -6,14 +6,17 @@ test_data:
   class_mode: "binary"
 
 models_to_evaluate:
-  - name: "DenseNet Model"
-    path: "experiments/individual_models/densenet/densenet_final.keras"
+  # - name: "DenseNet Model"
+  #   path: "experiments/individual_models/densenet/densenet_final.keras"
 
   - name: "Xception Model"
     path: "experiments/individual_models/xception/xception_final.keras"
 
-  - name: "ResNet Model"
-    path: "experiments/individual_models/resnet/resnet_final.keras"
+  # - name: "Xception Model0"
+  #   path: "src/training/experiments/individual_models/xception/checkpoints/trial_09/best_model_xception.keras"
+
+  # - name: "ResNet Model"
+  #   path: "src/training/experiments/individual_models/resnet/checkpoints/trial_01/best_model.keras"
 
 metrics:
   threshold: 0.5

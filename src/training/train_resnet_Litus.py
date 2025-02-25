@@ -117,15 +117,26 @@ if __name__ == '__main__':
     train_config = load_config("config/train_config_resnet.yaml")
     data_config = load_config("config/data_paths.yaml")
     
+    # Parámetros de entrenamiento
     epochs = train_config.get("epochs", 10)
     batch_size = train_config.get("batch_size", 8)
     input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
     train_dir = data_config.get("train_dir", "data/processed/Training")
     validation_split = train_config.get("validation_split", 0.0)
 
+    # Directorios
     experiments_dir = os.path.abspath(os.path.join(script_dir, "experiments/individual_models/resnet"))
     logs_dir = os.path.join(experiments_dir, "logs")
     ensure_dir(logs_dir)
+
+    # Configuración del ReduceLROnPlateau (si existe en el yaml)
+    reduce_lr_config = train_config.get("reduce_lr_on_plateau", {})
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor=reduce_lr_config.get("monitor", "val_loss"),
+        factor=reduce_lr_config.get("factor", 0.1),
+        patience=reduce_lr_config.get("patience", 3),
+        min_lr=reduce_lr_config.get("min_lr", 1e-5)
+    )
 
     # Data Augmentation
     train_datagen = ImageDataGenerator(
@@ -172,7 +183,14 @@ if __name__ == '__main__':
         project_name='resnet_tuning'
     )
 
-    early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+    early_stop = tf.keras.callbacks.EarlyStopping(
+        monitor='val_loss',
+        patience=3,
+        restore_best_weights=True
+    )
+
+    # Crear lista de callbacks
+    callbacks_list = [early_stop, reduce_lr]
 
     # Realizar la búsqueda de hiperparámetros
     if validation_generator is not None:
@@ -180,13 +198,15 @@ if __name__ == '__main__':
             train_generator,
             epochs=epochs,
             validation_data=validation_generator,
-            callbacks=[early_stop]
+            callbacks=callbacks_list
         )
     else:
+        # Si no hay split de validación, igual podemos usar ReduceLROnPlateau con 'loss'
+        # o algún otro monitor; pero de momento dejamos 'val_loss' por consistencia.
         tuner.search(
             train_generator,
             epochs=epochs,
-            callbacks=[early_stop]
+            callbacks=callbacks_list
         )
     
     print("✅ Proceso de tuning finalizado. Modelos guardados por trial en 'experiments/individual_models/resnet/checkpoints/'")

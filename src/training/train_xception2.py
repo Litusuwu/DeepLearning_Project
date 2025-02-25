@@ -59,7 +59,7 @@ class CustomTuner(kt.RandomSearch):
             metrics=['accuracy']
         )
         
-        model_save_path = os.path.join(trial_dir, "xception_final.keras")
+        model_save_path = os.path.join(trial_dir, "best_model_xception.keras")
         best_model.save(model_save_path)
         
         weights_save_path = os.path.join(trial_dir, "checkpoint.weights.h5")
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         max_trials=10,
         executions_per_trial=2,
         directory='kt_tuner_dir',
-        project_name='xception_tuning'
+        project_name='xception_tuning2'
     )
     
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
@@ -123,4 +123,4 @@ if __name__ == '__main__':
         callbacks=[early_stop]
     )
     
-    print("✅ Proceso de tuning finalizado. Modelos guardados por trial en 'experiments/individual_models/xception/checkpoints/'")
+    print("Proceso de tuning finalizado. Modelos guardados por trial en 'experiments/individual_models/xception/checkpoints/'")

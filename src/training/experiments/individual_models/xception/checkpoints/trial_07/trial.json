@@ -1,0 +1,10 @@
+{
+    "trial_id": "07",
+    "score": "N/A",
+    "best_hyperparameters": {
+        "dropout_rate": 0.25,
+        "l2_factor": 0.0001,
+        "n_layers_to_unfreeze": 25,
+        "learning_rate": 0.0007703289445934244
+    }
+}
