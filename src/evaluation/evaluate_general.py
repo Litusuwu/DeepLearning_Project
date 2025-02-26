@@ -19,15 +19,14 @@ def load_model_from_weights(config_path, weights_path):
     return model
 
 def load_config(config_path: str) -> dict:
-    """Carga un archivo YAML y retorna un diccionario con la configuración."""
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
 if __name__ == "__main__":
-    # 1. Cargar la configuración de evaluación
+    # load config
     eval_config = load_config("config/eval_config.yaml")
 
-    # 2. Extraer parámetros de test_data
+    # extract parameters
     test_data_cfg = eval_config["test_data"]
     test_dir = test_data_cfg["directory"]
     img_height = test_data_cfg["img_height"]
@@ -45,10 +44,8 @@ if __name__ == "__main__":
         shuffle=False  # to align predictions w the right tags
     )
 
-    # 4. Cargar la lista de modelos a evaluar
     models_info = eval_config["models_to_evaluate"]
 
-    # 5. Configuración adicional de métricas
     threshold = eval_config["metrics"].get("threshold", 0.5)
 
     # 6. Determinar etiquetas para el reporte

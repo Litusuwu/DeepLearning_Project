@@ -57,7 +57,7 @@ class TrialModelCheckpoint(tf.keras.callbacks.Callback):
         val_loss = logs.get("val_loss")
         if val_loss and val_loss < self.best_val_loss:
             self.best_val_loss = val_loss
-            model_save_path = os.path.join(self.trial_dir, "xception_final.keras")
+            model_save_path = os.path.join(self.trial_dir, "resnet_final.keras")
             self.model.save(model_save_path)
             print(f"Trial {self.trial_id:02d}: Saved new best model with val_loss {val_loss:.4f} at epoch {epoch}")
 

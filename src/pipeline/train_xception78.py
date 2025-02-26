@@ -7,33 +7,36 @@ from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
-
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 
 def load_config(config_path):
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
-
 def ensure_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-
 def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, learning_rate):
     base_model = Xception(weights='imagenet', include_top=False, input_shape=input_shape)
-    base_model.trainable = False
+    base_model.trainable = False  # Congela la base inicialmente
+
+    # Descongelar las últimas n_layers_to_unfreeze capas para fine-tuning
     for layer in base_model.layers[-n_layers_to_unfreeze:]:
         layer.trainable = True
+
     x = GlobalAveragePooling2D()(base_model.output)
     x = Dropout(dropout_rate)(x)
     predictions = Dense(1, activation='sigmoid', kernel_regularizer=l2(l2_factor))(x)
     model = Model(inputs=base_model.input, outputs=predictions)
+    
     optimizer = Adam(learning_rate=learning_rate)
     model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+    
     return model
 
-
 if __name__ == '__main__':
+    # Cargar configuraciones de entrenamiento y rutas de datos
     train_config = load_config("config/train_config_xception.yaml")
     data_config = load_config("config/data_paths.yaml")
 
@@ -44,7 +47,7 @@ if __name__ == '__main__':
     best_hp = {
         "dropout_rate": 0.35000000000000003,
         "l2_factor": 0.0005,
-        "n_layers_to_unfreeze": 9,  # adjust as per best tuning result
+        "n_layers_to_unfreeze": 10,  # según el mejor resultado de tuning
         "learning_rate": 0.00065564428223297
     }
 
@@ -76,10 +79,23 @@ if __name__ == '__main__':
                         best_hp["n_layers_to_unfreeze"],
                         best_hp["learning_rate"])
 
-    model.fit(train_generator, epochs=epochs, validation_data=validation_generator)
-
-    save_dir = "experiments/individual_models/xception78rep"
+    save_dir = "experiments/individual_models/xception78rep2"
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "xception_final.keras")
-    model.save(model_save_path)
-    print(f"✅ Xception model saved at {model_save_path}")
+
+    # Callback para guardar el mejor modelo basado en val_accuracy
+    checkpoint = ModelCheckpoint(filepath=model_save_path,
+                                 monitor='val_accuracy',
+                                 save_best_only=True,
+                                 verbose=1)
+
+    # Callback EarlyStopping para detener el entrenamiento si no mejora la validación
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
+
+    # Entrenar el modelo con validación y callbacks
+    model.fit(train_generator,
+              epochs=epochs,
+              validation_data=validation_generator,
+              callbacks=[checkpoint, early_stopping])
+
+    print(f"Xception model saved at {model_save_path}")

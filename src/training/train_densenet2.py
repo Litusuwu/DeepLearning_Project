@@ -59,7 +59,7 @@ if __name__ == '__main__':
     ensure_dir(logs_dir)
 
     # train and validation data generators
-    train_dir = data_config.get("train_dir", "data/processed/Training")
+    train_dir = data_config.get("train_dir", "data/raw/Training")
     validation_split = train_config.get("validation_split", 0.0)
 
     train_datagen = ImageDataGenerator(
@@ -71,6 +71,7 @@ if __name__ == '__main__':
         brightness_range=[0.8, 1.2],
         validation_split=validation_split
     )
+
     if validation_split > 0:
         train_generator = train_datagen.flow_from_directory(
             train_dir,
@@ -95,22 +96,22 @@ if __name__ == '__main__':
         )
         validation_generator = None
 
-    # Definir el tuner
+    # tuner definition
     tuner = kt.RandomSearch(
         hypermodel=lambda hp: build_model(hp, input_shape),
         objective='val_accuracy',
-        max_trials=10,  # número de combinaciones a probar
+        max_trials=10,  # number of trials
         executions_per_trial=1,
-        directory='kt_tuner_dir',
+        directory='keras_tuner',
         project_name='densenet_tuning'
     )
 
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="densenet_final.keras",  # Specify `.h5` directly if using HDF5 format
-        monitor="val_loss",
+        filepath="densenet_chk.keras",
+        monitor="val_accuracy",
         save_best_only=True,
-        mode='min',
-        save_weights_only=False  # If you only want to save weights, set this to True
+        mode='max',
+        save_weights_only=False
     )
 
     if validation_generator is not None:
@@ -123,18 +124,16 @@ if __name__ == '__main__':
                      epochs=epochs,
                      callbacks=[checkpoint_callback, tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)])
 
-    # Imprimir los mejores hiperparámetros encontrados
+    # print the best hyperparameters
     best_hp = tuner.get_best_hyperparameters()[0]
-    print("Mejores hiperparámetros encontrados:")
+    print("Best found hyperparameters:")
     print(f"  - Dropout Rate: {best_hp.get('dropout_rate')}")
     print(f"  - L2 Factor: {best_hp.get('l2_factor')}")
-    print(f"  - Número de capas a descongelar: {best_hp.get('n_layers_to_unfreeze')}")
+    print(f"  - Number of layers to unfreeze: {best_hp.get('n_layers_to_unfreeze')}")
     print(f"  - Learning Rate: {best_hp.get('learning_rate')}")
 
     # save the best model
-    best_model = tuner.hypermodel.build(best_hp)
-
-    # Save the final best model as .keras
-    model_save_path = os.path.join("kt_tuner_dir/densenet_tuning", "final_best_model.keras")
+    best_model = tuner.get_best_models(num_models=1)[0]
+    model_save_path = os.path.join("keras_tuner/densenet_tuning", "dense_final.keras")
     best_model.save(model_save_path, save_format="keras")
     print(f"✅ Model saved: {model_save_path}")

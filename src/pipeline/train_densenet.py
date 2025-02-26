@@ -8,16 +8,13 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
 
-
 def load_config(config_path):
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
-
 def ensure_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
-
 
 def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, learning_rate):
     base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=input_shape)
@@ -31,7 +28,6 @@ def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, lear
     optimizer = Adam(learning_rate=learning_rate)
     model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
     return model
-
 
 if __name__ == '__main__':
     # Load configuration files
