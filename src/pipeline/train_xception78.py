@@ -79,7 +79,7 @@ if __name__ == '__main__':
                         best_hp["n_layers_to_unfreeze"],
                         best_hp["learning_rate"])
 
-    save_dir = "experiments/individual_models/xception78rep2"
+    save_dir = "experiments/individual_models/xception78rep3"
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "xception_final.keras")
 

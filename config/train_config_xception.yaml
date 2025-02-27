@@ -1,8 +1,9 @@
 # Training and model configuration for Xception-based wildfire classification
 
 # Number of epochs and batch size
-epochs: 20             
-batch_size: 10        
+epochs: 20
+batch_size: 64             
+#batch_size: 10       
 
 # Input shape for the model (typically [height, width, channels])
 input_shape: [224, 224, 3]

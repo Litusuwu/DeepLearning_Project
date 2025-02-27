@@ -2,7 +2,7 @@ import os
 import yaml
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import ResNet152
+from tensorflow.keras.applications import Xception
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
@@ -24,10 +24,10 @@ def ensure_dir(path):
 def build_model(hp, input_shape):
     dropout_rate = hp.Float('dropout_rate', min_value=0.2, max_value=0.5, step=0.05, default=0.3)
     l2_factor = hp.Choice('l2_factor', values=[1e-4, 5e-4, 1e-3], default=1e-4)
-    n_layers_to_unfreeze = hp.Int('n_layers_to_unfreeze', min_value=10, max_value=100, step=5, default=10)
+    n_layers_to_unfreeze = hp.Int('n_layers_to_unfreeze', min_value=10, max_value=50, step=5, default=10)
     learning_rate = hp.Float('learning_rate', min_value=1e-4, max_value=1e-2, sampling='log', default=1e-4)
     
-    base_model = ResNet152(weights='imagenet', include_top=False, input_shape=input_shape)
+    base_model = Xception(weights='imagenet', include_top=False, input_shape=input_shape)
     base_model.trainable = False
 
     # unfreeze the last n layers
@@ -46,14 +46,14 @@ def build_model(hp, input_shape):
 if __name__ == '__main__':
     # load configuration files
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    train_config = load_config("config/train_config_resnet.yaml")
+    train_config = load_config("config/train_config_xception.yaml")
     data_config = load_config("config/data_paths.yaml")
     
     epochs = train_config.get("epochs", 20)
     batch_size = train_config.get("batch_size", 64)
     input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
     
-    experiments_dir = os.path.abspath(os.path.join(script_dir, "experiments/individual_models/resnet"))
+    experiments_dir = os.path.abspath(os.path.join(script_dir, "experiments/individual_models/xception_final"))
     logs_dir = os.path.join(experiments_dir, "logs")
     ensure_dir(logs_dir)
 
@@ -102,11 +102,11 @@ if __name__ == '__main__':
         max_trials=10,  
         executions_per_trial=2,
         directory='keras_tuner',
-        project_name='resnet_tuning'
+        project_name='xception_final_tuning'
     )
 
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="resnet_chk.keras",
+        filepath="xception_chk.keras",
         monitor="val_accuracy",
         save_best_only=True,
         mode='max',
@@ -155,6 +155,6 @@ if __name__ == '__main__':
 
     # save the best model
     best_model = tuner.get_best_models(num_models=1)[0]
-    model_save_path = os.path.join("keras_tuner/resnet_tuning", "res_final.keras")
+    model_save_path = os.path.join("keras_tuner/xception_final_tuning", "xcep_final.keras")
     best_model.save(model_save_path, save_format="keras")
-    print(f"✅ Model saved: {model_save_path}")
+    print(f"Model saved: {model_save_path}")

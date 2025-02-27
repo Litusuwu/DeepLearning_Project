@@ -1,35 +1,13 @@
-# configs/train_config_resnet.yaml
-# epochs: 10
-# batch_size: 32
-# input_shape: [224, 224, 3]
-# optimizer: "adam"
-# loss: "binary_crossentropy"
-# metrics:
-#   - "accuracy"
-# augmentation:
-#   shear_range: 0.2
-#   zoom_range: 0.2
-#   horizontal_flip: true
-# validation_split: 0.2
-# early_stopping:
-#   monitor: "val_loss"
-#   patience: 3
-# output_dirs:
-#   logs: "experiments/individual_models/resnet/logs"
-#   checkpoints: "experiments/individual_models/resnet/checkpoints"
-#   results: "experiments/individual_models/resnet/results"
 
-epochs: 20  # Reducimos a 12, early stopping decidirá si entrenar más
-batch_size: 16  # Menos agresivo para evitar sobreajuste
+# ResNet training config
+epochs: 20
+batch_size: 64
 input_shape: [224, 224, 3]
 optimizer: "adam"
-learning_rate: 0.0001  # Mantener, pero con batch_size menor
+learning_rate: 0.0001
 loss: "binary_crossentropy"
 metrics:
   - "accuracy"
-  - "Precision"
-  - "Recall"
-  - "AUC"
 
 augmentation:
   shear_range: 0.1
@@ -42,14 +20,13 @@ validation_split: 0.2
 
 early_stopping:
   monitor: "val_loss"
-  patience: 5  # Un poco más de paciencia, pero no tanto
+  patience: 5
 
-# Reducción de tasa de aprendizaje si el modelo deja de mejorar
 reduce_lr_on_plateau:
   monitor: "val_loss"
   factor: 0.1
   patience: 3
-  min_lr: 0.00001  # No bajar más allá de este límite
+  min_lr: 0.00001
 
 output_dirs:
   logs: "experiments/individual_models/resnet/logs"
