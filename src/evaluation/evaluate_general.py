@@ -5,6 +5,9 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from metrics import compute_metrics, plot_roc_curve
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def load_model_from_weights(config_path, weights_path):
     """Load a model architecture from JSON and apply weights."""
@@ -58,6 +61,9 @@ if __name__ == "__main__":
     # Set up TensorBoard summary writer for logging evaluation metrics
     log_dir = "logs/evaluation"
     summary_writer = tf.summary.create_file_writer(log_dir)
+
+    conf_matrix_dir = "confusion_matrices"
+    os.makedirs(conf_matrix_dir, exist_ok=True)
 
     # 7. Evaluar cada modelo
     for model_info in models_info:
@@ -136,5 +142,21 @@ if __name__ == "__main__":
         # 10. Graficar la curva ROC
         fpr, tpr, auc_value = roc_data
         plot_roc_curve(fpr, tpr, auc_value, model_name=model_name)
+
+        # 11. Compute and plot the confusion matrix
+        conf_matrix = confusion_matrix(true_classes, predicted_classes)
+
+        plt.figure(figsize=(6, 5))
+        sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues",
+                    xticklabels=ordered_classes, yticklabels=ordered_classes)
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title(f"Confusion Matrix - {model_name}")
+
+        # Save the confusion matrix
+        conf_matrix_path = os.path.join(conf_matrix_dir, f"{model_name}_confusion_matrix.png")
+        plt.savefig(conf_matrix_path)
+        plt.close()  # Close the plot to free memory
+        print(f"Confusion matrix saved to: {conf_matrix_path}")
 
     print("\nEvaluations completed.")
