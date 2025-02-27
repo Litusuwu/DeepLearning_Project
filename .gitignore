@@ -32,6 +32,7 @@ data/raw/
 data/resized/
 data/augmented/
 data/processed/
+data/external/
 # ===================================
 # Modelos entrenados
 # ===================================
