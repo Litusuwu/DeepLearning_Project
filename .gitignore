@@ -24,6 +24,7 @@ env.yaml
 # ===================================
 *.log
 logs/
+report/
 report2/
 experiments/
 keras_tuner/
@@ -38,6 +39,7 @@ data/resized/
 data/augmented/
 data/processed/
 data/external/
+
 # ===================================
 # Modelos entrenados
 # ===================================
