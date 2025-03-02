@@ -26,6 +26,8 @@ env.yaml
 logs/
 report2/
 experiments/
+keras_tuner/
+kt_tuner_dir/
 
 # ===================================
 # Datos
