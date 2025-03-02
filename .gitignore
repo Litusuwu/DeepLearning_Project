@@ -25,6 +25,7 @@ env.yaml
 *.log
 logs/
 report2/
+experiments/
 
 # ===================================
 # Datos
