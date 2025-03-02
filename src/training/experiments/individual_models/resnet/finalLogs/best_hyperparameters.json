@@ -1,6 +1,0 @@
-{
-    "dropout_rate": 0.30000000000000004,
-    "l2_factor": 0.0005,
-    "n_layers_to_unfreeze": 20,
-    "learning_rate": 0.0007279554359283472
-}

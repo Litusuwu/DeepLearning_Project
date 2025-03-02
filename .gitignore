@@ -28,6 +28,7 @@ report2/
 experiments/
 keras_tuner/
 kt_tuner_dir/
+src/training/experiments/
 
 # ===================================
 # Datos
