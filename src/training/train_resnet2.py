@@ -9,9 +9,8 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
 import keras_tuner as kt
 
-# enable GPU optimization
 tf.config.optimizer.set_jit(True)
-tf.keras.mixed_precision.set_global_policy('mixed_float16') # mixed data precision (16-32)
+tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 def load_config(config_path):
     with open(config_path, 'r') as f:
@@ -30,7 +29,6 @@ def build_model(hp, input_shape):
     base_model = ResNet152(weights='imagenet', include_top=False, input_shape=input_shape)
     base_model.trainable = False
 
-    # unfreeze the last n layers
     for layer in base_model.layers[-n_layers_to_unfreeze:]:
         layer.trainable = True
 
@@ -44,7 +42,6 @@ def build_model(hp, input_shape):
     return model
 
 if __name__ == '__main__':
-    # load configuration files
     script_dir = os.path.dirname(os.path.abspath(__file__))
     train_config = load_config("config/train_config_resnet.yaml")
     data_config = load_config("config/data_paths.yaml")
@@ -57,7 +54,6 @@ if __name__ == '__main__':
     logs_dir = os.path.join(experiments_dir, "logs")
     ensure_dir(logs_dir)
 
-    # train and validation data generators
     train_dir = data_config.get("train_dir", "data/raw/Training")
     validation_split = train_config.get("validation_split", 0.0)
 
@@ -95,7 +91,6 @@ if __name__ == '__main__':
         )
         validation_generator = None
 
-    # tuner definition
     tuner = kt.RandomSearch(
         hypermodel=lambda hp: build_model(hp, input_shape),
         objective='val_accuracy',
@@ -145,7 +140,6 @@ if __name__ == '__main__':
             callbacks=callback_list
         )
 
-    # print the best hyperparameters
     best_hp = tuner.get_best_hyperparameters()[0]
     print("Best found hyperparameters:")
     print(f"  - Dropout Rate: {best_hp.get('dropout_rate')}")
@@ -153,7 +147,6 @@ if __name__ == '__main__':
     print(f"  - Number of layers to unfreeze: {best_hp.get('n_layers_to_unfreeze')}")
     print(f"  - Learning Rate: {best_hp.get('learning_rate')}")
 
-    # save the best model
     best_model = tuner.get_best_models(num_models=1)[0]
     model_save_path = os.path.join("keras_tuner/resnet_tuning", "res_final.keras")
     best_model.save(model_save_path, save_format="keras")

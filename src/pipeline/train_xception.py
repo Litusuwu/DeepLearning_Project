@@ -44,7 +44,7 @@ if __name__ == '__main__':
     best_hp = {
         "dropout_rate": 0.35000000000000003,
         "l2_factor": 0.0005,
-        "n_layers_to_unfreeze": 9,  # adjust as per best tuning result
+        "n_layers_to_unfreeze": 9,
         "learning_rate": 0.00065564428223297
     }
 
@@ -82,4 +82,4 @@ if __name__ == '__main__':
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "xception_final.keras")
     model.save(model_save_path)
-    print(f"✅ Xception model saved at {model_save_path}")
+    print(f"Xception model saved at {model_save_path}")

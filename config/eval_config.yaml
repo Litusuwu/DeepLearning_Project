@@ -6,17 +6,17 @@ test_data:
   class_mode: "binary"
 
 models_to_evaluate:
-#     - name: "DenseNet Model"
-#       path: "densenet_final.keras"
-#
-#     - name: "Resnet Model"
-#       path: "resnet_final.keras"
-#
-#     - name: "Xception Model0"
-#       path: "xception_final.keras"
+    - name: "DenseNet Model"
+      path: "densenet_final.keras"
 
-     - name: "Ensemble Model"
-       path: "ensemble_final.keras"
+    - name: "Resnet Model"
+      path: "resnet_final.keras"
+
+    - name: "Xception Model0"
+      path: "xception_final.keras"
+
+    - name: "Ensemble Model"
+      path: "ensemble_final.keras"
 
 metrics:
   threshold: 0.5

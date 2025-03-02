@@ -19,9 +19,8 @@ def ensure_dir(path):
 
 def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, learning_rate):
     base_model = Xception(weights='imagenet', include_top=False, input_shape=input_shape)
-    base_model.trainable = False  # Congela la base inicialmente
+    base_model.trainable = False
 
-    # Descongelar las últimas n_layers_to_unfreeze capas para fine-tuning
     for layer in base_model.layers[-n_layers_to_unfreeze:]:
         layer.trainable = True
 
@@ -36,7 +35,6 @@ def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, lear
     return model
 
 if __name__ == '__main__':
-    # Cargar configuraciones de entrenamiento y rutas de datos
     train_config = load_config("config/train_config_xception.yaml")
     data_config = load_config("config/data_paths.yaml")
 
@@ -47,7 +45,7 @@ if __name__ == '__main__':
     best_hp = {
         "dropout_rate": 0.35000000000000003,
         "l2_factor": 0.0005,
-        "n_layers_to_unfreeze": 10,  # según el mejor resultado de tuning
+        "n_layers_to_unfreeze": 10,
         "learning_rate": 0.00065564428223297
     }
 
@@ -83,16 +81,14 @@ if __name__ == '__main__':
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "xception_final.keras")
 
-    # Callback para guardar el mejor modelo basado en val_accuracy
+
     checkpoint = ModelCheckpoint(filepath=model_save_path,
                                  monitor='val_accuracy',
                                  save_best_only=True,
                                  verbose=1)
 
-    # Callback EarlyStopping para detener el entrenamiento si no mejora la validación
     early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1)
 
-    # Entrenar el modelo con validación y callbacks
     model.fit(train_generator,
               epochs=epochs,
               validation_data=validation_generator,

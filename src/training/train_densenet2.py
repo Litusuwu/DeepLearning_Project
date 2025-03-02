@@ -9,7 +9,6 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
 import keras_tuner as kt
 
-# enable GPU optimization
 tf.config.optimizer.set_jit(True)
 tf.keras.mixed_precision.set_global_policy('mixed_float16') # mixed data precision (16-32)
 
@@ -22,7 +21,6 @@ def ensure_dir(path):
         os.makedirs(path)
 
 def build_model(hp, input_shape):
-    # hyperparameters to tune
     dropout_rate = hp.Float('dropout_rate', min_value=0.2, max_value=0.5, step=0.05, default=0.3)
     l2_factor = hp.Choice('l2_factor', values=[1e-4, 5e-4, 1e-3], default=1e-4)
     n_layers_to_unfreeze = hp.Int('n_layers_to_unfreeze', min_value=5, max_value=20, step=5, default=10)
@@ -31,7 +29,6 @@ def build_model(hp, input_shape):
     base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=input_shape)
     base_model.trainable = False
 
-    # unfreeze the last n layers
     for layer in base_model.layers[-n_layers_to_unfreeze:]:
         layer.trainable = True
 
@@ -45,7 +42,6 @@ def build_model(hp, input_shape):
     return model
 
 if __name__ == '__main__':
-    # load configuration files
     script_dir = os.path.dirname(os.path.abspath(__file__))
     train_config = load_config("config/train_config_densenet.yaml")
     data_config = load_config("config/data_paths.yaml")
@@ -58,7 +54,6 @@ if __name__ == '__main__':
     logs_dir = os.path.join(experiments_dir, "logs")
     ensure_dir(logs_dir)
 
-    # train and validation data generators
     train_dir = data_config.get("train_dir", "data/raw/Training")
     validation_split = train_config.get("validation_split", 0.0)
 
@@ -96,7 +91,6 @@ if __name__ == '__main__':
         )
         validation_generator = None
 
-    # tuner definition
     tuner = kt.RandomSearch(
         hypermodel=lambda hp: build_model(hp, input_shape),
         objective='val_accuracy',
@@ -124,7 +118,6 @@ if __name__ == '__main__':
                      epochs=epochs,
                      callbacks=[checkpoint_callback, tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)])
 
-    # print the best hyperparameters
     best_hp = tuner.get_best_hyperparameters()[0]
     print("Best found hyperparameters:")
     print(f"  - Dropout Rate: {best_hp.get('dropout_rate')}")
@@ -132,8 +125,7 @@ if __name__ == '__main__':
     print(f"  - Number of layers to unfreeze: {best_hp.get('n_layers_to_unfreeze')}")
     print(f"  - Learning Rate: {best_hp.get('learning_rate')}")
 
-    # save the best model
     best_model = tuner.get_best_models(num_models=1)[0]
     model_save_path = os.path.join("keras_tuner/densenet_tuning", "dense_final.keras")
     best_model.save(model_save_path, save_format="keras")
-    print(f"✅ Model saved: {model_save_path}")
+    print(f"Model saved: {model_save_path}")

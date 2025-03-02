@@ -39,24 +39,18 @@ def compute_metrics(true_labels, predicted_probs, threshold=0.5, class_labels=No
     if class_labels is None:
         class_labels = ["Class 0", "Class 1"]
 
-    # Convertir probabilidades a clases binarias
     predicted_classes = (predicted_probs > threshold).astype("int32").flatten()
 
-    # Accuracy y F1 Score
     accuracy = accuracy_score(true_labels, predicted_classes)
     f1 = f1_score(true_labels, predicted_classes)
 
-    # R² Score (usamos las probabilidades sin binarizar)
     r2 = r2_score(true_labels, predicted_probs)
 
-    # Curva ROC y AUC-ROC
     fpr, tpr, _ = roc_curve(true_labels, predicted_probs)
     auc_value = auc(fpr, tpr)
 
-    # Reporte de clasificación
     report = classification_report(true_labels, predicted_classes, target_names=class_labels)
 
-    # Guardamos las métricas en un diccionario
     metrics_dict = {
         "Accuracy": accuracy,
         "F1 Score": f1,

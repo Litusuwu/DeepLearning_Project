@@ -44,7 +44,7 @@ if __name__ == '__main__':
     best_hp = {
         "dropout_rate": 0.3,
         "l2_factor": 1e-4,
-        "n_layers_to_unfreeze": 10,  # set according to your best trial
+        "n_layers_to_unfreeze": 10,
         "learning_rate": 1e-4
     }
 
@@ -97,4 +97,4 @@ if __name__ == '__main__':
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "resnet_final.keras")
     model.save(model_save_path)
-    print(f"✅ ResNet model saved at {model_save_path}")
+    print(f"ResNet model saved at {model_save_path}")

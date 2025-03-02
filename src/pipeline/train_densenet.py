@@ -30,7 +30,6 @@ def build_model(input_shape, dropout_rate, l2_factor, n_layers_to_unfreeze, lear
     return model
 
 if __name__ == '__main__':
-    # Load configuration files
     train_config = load_config("config/train_config_densenet.yaml")
     data_config = load_config("config/data_paths.yaml")
 
@@ -38,7 +37,6 @@ if __name__ == '__main__':
     batch_size = train_config.get("batch_size", 8)
     input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
 
-    # Use best hyperparameters from previous tuning (or load from a JSON)
     best_hp = {
         "dropout_rate": 0.3,
         "l2_factor": 1e-4,
@@ -46,7 +44,6 @@ if __name__ == '__main__':
         "learning_rate": 1e-4
     }
 
-    # Setup data generators
     train_dir = data_config.get("train_dir", "data/processed/Training")
     validation_split = train_config.get("validation_split", 0.0)
 
@@ -84,7 +81,6 @@ if __name__ == '__main__':
         )
         validation_generator = None
 
-    # Build and train the model
     model = build_model(input_shape,
                         best_hp["dropout_rate"],
                         best_hp["l2_factor"],
@@ -93,7 +89,6 @@ if __name__ == '__main__':
 
     model.fit(train_generator, epochs=epochs, validation_data=validation_generator)
 
-    # Save the final model
     save_dir = "experiments/individual_models/densenet"
     ensure_dir(save_dir)
     model_save_path = os.path.join(save_dir, "densenet_final.keras")

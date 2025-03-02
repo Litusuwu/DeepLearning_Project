@@ -11,8 +11,8 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import Adam
 
 
-tf.config.optimizer.set_jit(True)  # Habilitar XLA (Accelerated Linear Algebra)
-tf.keras.mixed_precision.set_global_policy('mixed_float16')  # Usar mixed precision
+tf.config.optimizer.set_jit(True)
+tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 
 def load_config(config_path):
@@ -61,7 +61,7 @@ class TrialModelCheckpoint(tf.keras.callbacks.Callback):
             self.best_val_loss = val_loss
             model_save_path = os.path.join(self.trial_dir, "best_model_xception.keras")
             self.model.save(model_save_path)
-            print(f"✅ Trial {self.trial_id}: Mejor modelo guardado con val_loss {val_loss:.4f} en epoch {epoch}")
+            print(f"Trial {self.trial_id}: Mejor modelo guardado con val_loss {val_loss:.4f} en epoch {epoch}")
 
 class CustomTuner(kt.RandomSearch):
     def on_trial_end(self, trial):
@@ -75,7 +75,6 @@ class CustomTuner(kt.RandomSearch):
         with open(os.path.join(trial_dir, "build_config.json"), "w") as f:
             json.dump(hp_config, f, indent=4)
 
-        # Cargar el mejor modelo guardado por TrialModelCheckpoint
         best_model_path = os.path.join(trial_dir, "best_model_xception.keras")
         if os.path.exists(best_model_path):
             best_model = tf.keras.models.load_model(best_model_path)
