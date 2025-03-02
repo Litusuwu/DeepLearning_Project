@@ -42,10 +42,10 @@ if __name__ == '__main__':
     input_shape = tuple(train_config.get("input_shape", [224, 224, 3]))
 
     best_hp = {
-        "dropout_rate": 0.35000000000000003,
-        "l2_factor": 0.0005,
-        "n_layers_to_unfreeze": 9,
-        "learning_rate": 0.00065564428223297
+        "dropout_rate": 0.45,
+        "l2_factor": 0.001,
+        "n_layers_to_unfreeze": 25,
+        "learning_rate": 0.009414241880237885
     }
 
     train_dir = data_config.get("train_dir", "data/processed/Training")

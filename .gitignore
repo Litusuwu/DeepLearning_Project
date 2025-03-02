@@ -29,7 +29,8 @@ report2/
 experiments/
 keras_tuner/
 kt_tuner_dir/
-src/training/experiments/
+src/search/experiments/
+confusion_matrices/
 
 # ===================================
 # Datos

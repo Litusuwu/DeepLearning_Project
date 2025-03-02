@@ -1,77 +1,118 @@
-import os
+#!/usr/bin/env python3
 import tensorflow as tf
-from tensorflow.keras.models import load_model, Model, clone_model
-from tensorflow.keras.layers import Average, Input
+import os
 
 
-def rename_model_layers(model, prefix):
-    used_names = set()
+def main():
+    print("Cargando modelos pre-entrenados...")
 
-    def get_unique_name(name, prefix):
-        new_name = f"{prefix}_{name}"
-        counter = 1
-        while new_name in used_names:
-            new_name = f"{prefix}_{name}_{counter}"
-            counter += 1
-        used_names.add(new_name)
-        return new_name
+    model_densenet = tf.keras.models.load_model("densenet_final.keras", compile=False)
+    model_resnet = tf.keras.models.load_model("resnet_final.keras", compile=False)
+    model_xception = tf.keras.models.load_model("xception_final.keras", compile=False)
 
-    def rename_layers(layer):
-        if isinstance(layer, tf.keras.layers.InputLayer):
-            return
+    input_shape = (224, 224, 3)
+    ensemble_input = tf.keras.layers.Input(shape=input_shape, name="ensemble_input")
 
-        layer._name = get_unique_name(layer.name, prefix)
+    def create_submodel(base_model, prefix, input_tensor):
+        x = input_tensor
 
-        if hasattr(layer, 'layers'):
-            for sublayer in layer.layers:
-                rename_layers(sublayer)
+        for i, layer in enumerate(base_model.layers[1:]):
+            layer_config = layer.get_config()
+            if 'name' in layer_config:
+                original_name = layer_config['name']
+                layer_config['name'] = f"{prefix}_{original_name}_{i}"
 
-    for layer in model.layers:
-        rename_layers(layer)
+            layer_class = layer.__class__
+            new_layer = layer_class.from_config(layer_config)
 
-    return model
+            if hasattr(layer, 'get_weights') and layer.get_weights():
+                new_layer.set_weights(layer.get_weights())
+
+            x = new_layer(x)
+
+        return x
+
+    densenet_path = tf.keras.layers.Lambda(
+        lambda x: x,
+        name="densenet_preprocessor"
+    )(ensemble_input)
+
+    resnet_path = tf.keras.layers.Lambda(
+        lambda x: x,
+        name="resnet_preprocessor"
+    )(ensemble_input)
+
+    xception_path = tf.keras.layers.Lambda(
+        lambda x: x,
+        name="xception_preprocessor"
+    )(ensemble_input)
+
+    densenet_output = tf.keras.models.Model(
+        inputs=model_densenet.input,
+        outputs=model_densenet.output,
+        name="densenet_feature_extractor"
+    )(densenet_path)
+
+    resnet_output = tf.keras.models.Model(
+        inputs=model_resnet.input,
+        outputs=model_resnet.output,
+        name="resnet_feature_extractor"
+    )(resnet_path)
+
+    xception_output = tf.keras.models.Model(
+        inputs=model_xception.input,
+        outputs=model_xception.output,
+        name="xception_feature_extractor"
+    )(xception_path)
+
+    if not os.path.exists("temp_models"):
+        os.makedirs("temp_models")
+
+    temp_densenet_path = "temp_models/densenet_outputs.keras"
+    temp_resnet_path = "temp_models/resnet_outputs.keras"
+    temp_xception_path = "temp_models/xception_outputs.keras"
+
+    tf.keras.models.Model(inputs=model_densenet.input, outputs=model_densenet.output,
+                          name="temp_densenet").save(temp_densenet_path)
+    tf.keras.models.Model(inputs=model_resnet.input, outputs=model_resnet.output,
+                          name="temp_resnet").save(temp_resnet_path)
+    tf.keras.models.Model(inputs=model_xception.input, outputs=model_xception.output,
+                          name="temp_xception").save(temp_xception_path)
+
+    densenet_model = tf.keras.models.load_model(temp_densenet_path, compile=False)
+    resnet_model = tf.keras.models.load_model(temp_resnet_path, compile=False)
+    xception_model = tf.keras.models.load_model(temp_xception_path, compile=False)
+
+    densenet_model._name = "densenet_output_model"
+    resnet_model._name = "resnet_output_model"
+    xception_model._name = "xception_output_model"
+
+    densenet_preds = densenet_model(ensemble_input)
+    resnet_preds = resnet_model(ensemble_input)
+    xception_preds = xception_model(ensemble_input)
+
+    ensemble_output = tf.keras.layers.Average(name="ensemble_average")(
+        [densenet_preds, resnet_preds, xception_preds]
+    )
+
+    ensemble_model = tf.keras.models.Model(
+        inputs=ensemble_input,
+        outputs=ensemble_output,
+        name="ensemble_model"
+    )
+
+    from tensorflow.keras.utils import plot_model
+    plot_model(ensemble_model, show_shapes=True, to_file="ensemble_model.png")
+
+    ensemble_model.save("ensemble_model2.keras")
+    print("Modelo ensemble guardado exitosamente en ensemble_model2.keras")
+
+    for temp_file in [temp_densenet_path, temp_resnet_path, temp_xception_path]:
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+    if os.path.exists("temp_models"):
+        os.rmdir("temp_models")
 
 
-def clone_with_unique_names(model, prefix):
-    cloned = clone_model(model)
-    cloned._name = f"{prefix}_model"
-
-    cloned = rename_model_layers(cloned, prefix)
-
-    cloned.set_weights(model.get_weights())
-    return cloned
-
-
-densenet_path = "experiments/individual_models/densenet/densenet_final.keras"
-resnet_path = "experiments/individual_models/resnet/resnet_final.keras"
-xception_path = "experiments/individual_models/xception/xception_final.keras"
-
-model_densenet = load_model(densenet_path)
-model_resnet = load_model(resnet_path)
-model_xception = load_model(xception_path)
-
-model_densenet = clone_with_unique_names(model_densenet, "densenet")
-model_resnet   = clone_with_unique_names(model_resnet,   "resnet")
-model_xception = clone_with_unique_names(model_xception, "xception")
-
-model_densenet.trainable = False
-model_resnet.trainable = False
-model_xception.trainable = False
-
-input_shape = model_densenet.input_shape[1:]
-inp = Input(shape=input_shape, name="ensemble_input")
-
-with tf.name_scope("densenet_scope"):
-    pred1 = model_densenet(inp)
-with tf.name_scope("resnet_scope"):
-    pred2 = model_resnet(inp)
-with tf.name_scope("xception_scope"):
-    pred3 = model_xception(inp)
-
-ensemble_output = Average(name="ensemble_average")([pred1, pred2, pred3])
-ensemble_model = Model(inputs=inp, outputs=ensemble_output, name="ensemble_model")
-ensemble_model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
-
-save_path = "experiments/individual_models/ensemble_model.keras"
-ensemble_model.save(save_path)
-print(f"✅ Ensemble model saved at {save_path}")
+if __name__ == "__main__":
+    main()
