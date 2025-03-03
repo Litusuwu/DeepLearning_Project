@@ -49,7 +49,12 @@ mi_proyecto_fire_detection/
 
 ## Web App and Hugging Face
 
-The trained models can be tested with a simple web app built to interact with it.
-[Here](https://github.com/superflash41/isaFIRE) is the repository.
+The trained models can be tested with a [simple web app](https://github.com/superflash41/isaFIRE) built
+to interact with it.
 
 They can also be found and used on [Hugging Face](https://huggingface.co/superflash41/fire-chad-detector-v1.0).
+
+## Documentation
+
+The project's final report with the detailed explanation of our research can be found in the [`report/`](report) folder
+and the presentation and poster can be found on the [`presentation/`](presentation) folder.
