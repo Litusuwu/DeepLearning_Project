@@ -1,0 +1,29 @@
+\section{State of the Art and Baseline}
+\label{sec:baseline}
+
+\begin{frame}
+    \frametitle{Traditional Approaches to Wildfire Detection}
+    \begin{itemize}
+        \item \textbf{Sensor-based methods:} Use \textbf{temperature, smoke, and gas sensors}, but have \textbf{limited coverage}.
+        \item \textbf{Classic Computer Vision methods:} Use \textbf{color-based segmentation}, but suffer from \textbf{high false positives}.
+        \item \textbf{Machine Learning and Deep Learning approaches:}
+            \begin{itemize}
+                \item CNN-based classification (e.g., Xception, DenseNet, ResNet).
+                \item Object detection with \textbf{YOLOv8}.
+                \item Vision Transformers (\textbf{ViTs}) for feature extraction.
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Baseline Model: FireSight (Stanford)}
+    \begin{itemize}
+        \item FireSight combines \textbf{CNNs and ViTs} for aerial wildfire detection.
+        \item Achieves \textbf{82.28\% accuracy} using \textbf{DenseNet + ResNet + ViT} ensemble.
+        \item Our approach:
+            \begin{itemize}
+                \item Improve CNN-only ensemble.
+                \item Optimize architecture for \textbf{real-time drone deployment}.
+            \end{itemize}
+    \end{itemize}
+\end{frame}

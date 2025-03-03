@@ -1,0 +1,53 @@
+%! Author = CPSquad
+%! Date = 3/3/25
+
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{rose}
+
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{caption}
+
+\title{Wildfire Detection with a CNN Ensemble}
+\subtitle{1INF52 Deep Learning}
+\author{CPSquad}
+\institute{PUCP}
+\date{\today}
+
+\newcommand{\blocky}[2]{
+    \begin{center}
+    \begin{minipage}{0.8\textwidth}
+    \begin{tcolorbox}[
+        colback=red!5!white,
+        colframe=red!75!black,
+        title=\textbf{#1},
+        before title={\vspace{4pt}},
+        after title={\vspace{2pt}},
+        top=2mm,
+        bottom=2mm
+    ]
+    #2
+    \end{tcolorbox}
+    \end{minipage}
+    \end{center}
+}
+
+\begin{document}
+
+    \frame{\titlepage}
+
+    \begin{frame}
+    \frametitle{Contents}
+    \tableofcontents
+    \end{frame}
+
+    % include the other sections
+    \input{contents/intro}
+    \input{contents/baseline}
+    \input{contents/dataset}
+    \input{contents/experiments}
+    \input{contents/results}
+    \input{contents/conclusions}
+
+\end{document}

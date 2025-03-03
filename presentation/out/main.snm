@@ -1,0 +1,11 @@
+\beamer@slide {sec:intro}{3}
+\beamer@slide {fig:wildfire}{3}
+\beamer@slide {sec:baseline}{5}
+\beamer@slide {sec:dataset}{7}
+\beamer@slide {sec:experiments}{8}
+\beamer@slide {subsec:pipeline}{8}
+\beamer@slide {fig:model}{8}
+\beamer@slide {subsec:hyper-tuning}{9}
+\beamer@slide {subsec:ensemble}{10}
+\beamer@slide {sec:results}{11}
+\beamer@slide {sec:conclusions}{13}
