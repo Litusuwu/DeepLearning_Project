@@ -2,6 +2,7 @@
 \beamer@slide {fig:wildfire}{3}
 \beamer@slide {sec:baseline}{5}
 \beamer@slide {sec:dataset}{7}
+\beamer@slide {fig:sample}{7}
 \beamer@slide {sec:experiments}{8}
 \beamer@slide {subsec:pipeline}{8}
 \beamer@slide {fig:model}{8}

@@ -4,13 +4,31 @@
 \begin{frame}
     \frametitle{Key Takeaways}
     \begin{itemize}
-        \item Our ensemble \textbf{outperforms the baseline} in \textbf{accuracy and F1-score}.
-        \item CNN ensembles can achieve \textbf{real-time inference} on drones.
-        \item Future work: \textbf{Dataset expansion, real-world testing, transfer learning}.
+        \item \textbf{DenseNet121 and Xception} models outperformed the ensemble in some metrics.
+        \item The ensemble's advantage might be due to the use of \textbf{Vision Transformers (ViTs)}.
+        \item \textbf{Close-to-SOTA results} may be due to this dataset not being used at scale with recent models.
+        \item \textbf{Keras Tuner} was crucial for finding the best hyperparameters, improving individual models.
+        \item \textbf{Future Work:}
+        \begin{itemize}
+            \item \textbf{Pruning} to reduce model size and improve inference speed.
+            \item \textbf{Distillation} to compress into a lighter architecture like MobileNetV3.
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Thank You!}
-    \Huge{\centering Questions?}
+
+    \centering
+    \includegraphics[width=0.2\textwidth]{images/thanks}
+
+    \vspace{0.5cm}
+
+    \textbf{Our code is available at:}
+    \href{https://github.com/Litusuwu/DeepLearning_Project}{\texttt{github.com/Litusuwu/DeepLearning\_Project}}
+
+    \vspace{0.5cm}
+
+    \textbf{Trained models can be found at:}
+    \href{https://huggingface.co/superflash41/fire-chad-detector-v1.0}{\texttt{huggingface.co/superflash41/fire-chad-detector-v1.0}}
 \end{frame}

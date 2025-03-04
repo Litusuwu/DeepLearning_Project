@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{tcolorbox}
 \usepackage{caption}
+\setbeamertemplate{caption}[numbered]
 
 \title{Wildfire Detection with a CNN Ensemble}
 \subtitle{1INF52 Deep Learning}
@@ -19,7 +20,7 @@
     \begin{center}
     \begin{minipage}{0.8\textwidth}
     \begin{tcolorbox}[
-        colback=red!5!white,
+        colback=pink!5!white,
         colframe=red!75!black,
         title=\textbf{#1},
         before title={\vspace{4pt}},
@@ -42,7 +43,7 @@
     \tableofcontents
     \end{frame}
 
-    % include the other sections
+    % sections
     \input{contents/intro}
     \input{contents/baseline}
     \input{contents/dataset}

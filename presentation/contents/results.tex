@@ -3,14 +3,27 @@
 
 \begin{frame}
     \frametitle{Confusion Matrices}
-    %\includegraphics[width=0.8\textwidth]{images/confusion_matrices.png}
+    %\includegraphics[width=0.8\textwidth]{images/confusion_matrices}
+    hola
 \end{frame}
 
 \begin{frame}
     \frametitle{Final Model Performance}
-    %\includegraphics[width=0.8\textwidth]{images/comparison_table.png}
-    \begin{itemize}
-        \item \textbf{Baseline F1-score:} \textbf{0.58}, Accuracy: \textbf{82.28\%}
-        \item \textbf{Our Final Model:} \textbf{F1-score: 0.61}, Accuracy: \textbf{86.50\%}
-    \end{itemize}
+    %\includegraphics[width=0.8\textwidth]{images/comparison_table}
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \textbf{Model} & \multicolumn{2}{c|}{\textbf{Baseline}} & \multicolumn{2}{c|}{\textbf{Our Models}} \\
+            \cline{2-5}
+            & F1-score & Accuracy & F1-score & Accuracy \\
+            \hline
+            Xception & 0.58 & \textbf{49.09\%} & 0.5087 & \textbf{70.72\%} \\
+            DenseNet121 & 0.53 & 70.35\% & \textbf{0.8324} & \textbf{86.5\%} \\
+            ResNet152 & 0.61 & \textbf{73.2\%} & 0.6484 & 72.3\% \\
+            \hline
+            \textbf{Ensemble (Voting)} & \textbf{0.75} & \textbf{81.94\%} & 0.7169 & 79.4\% \\
+            \hline
+        \end{tabular}
+    \end{center}
 \end{frame}

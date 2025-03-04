@@ -57,4 +57,4 @@ They can also be found and used on [Hugging Face](https://huggingface.co/superfl
 ## Documentation
 
 The project's final report with the detailed explanation of our research can be found in the [`report/`](report) folder
-and the presentation and poster can be found on the [`presentation/`](presentation) folder.
+and the presentation and poster can be found on the [`presentation/`](presentation) folder. 

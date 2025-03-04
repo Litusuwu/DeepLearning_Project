@@ -19,11 +19,12 @@
     \frametitle{Baseline Model: FireSight (Stanford)}
     \begin{itemize}
         \item FireSight combines \textbf{CNNs and ViTs} for aerial wildfire detection.
-        \item Achieves \textbf{82.28\% accuracy} using \textbf{DenseNet + ResNet + ViT} ensemble.
+        \item Achieves \textbf{82.28\% accuracy} and an \textbf{F1-score of 0.75} using a \textbf{DenseNet + ResNet + ViT} ensemble.
         \item Our approach:
             \begin{itemize}
-                \item Improve CNN-only ensemble.
-                \item Optimize architecture for \textbf{real-time drone deployment}.
+                \item Perform \textbf{Transfer Learning} on \textbf{Xception, DenseNet, and ResNet} using pre-trained weights.
+                \item Improve each model's performance by \textbf{unfreezing and training the last layers} to refine feature extraction.
+                \item Ensemble the fine-tuned models using a \textbf{voting-based strategy} to compare against the SOTA baseline.
             \end{itemize}
     \end{itemize}
 \end{frame}
