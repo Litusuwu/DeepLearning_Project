@@ -3,8 +3,27 @@
 
 \begin{frame}
     \frametitle{Confusion Matrices}
-    %\includegraphics[width=0.8\textwidth]{images/confusion_matrices}
-    hola
+
+    \begin{minipage}[c]{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{images/densenet}\\
+        DenseNet
+    \end{minipage}%
+    \begin{minipage}[c]{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{images/resnet}\\
+        ResNet
+    \end{minipage}\\
+    \begin{minipage}[c]{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{images/xception}\\
+        Xception
+    \end{minipage}%
+    \begin{minipage}[c]{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.6\textwidth]{images/ensemble}\\
+        Ensemble
+    \end{minipage}
 \end{frame}
 
 \begin{frame}
@@ -19,8 +38,8 @@
             & F1-score & Accuracy & F1-score & Accuracy \\
             \hline
             Xception & 0.58 & \textbf{49.09\%} & 0.5087 & \textbf{70.72\%} \\
-            DenseNet121 & 0.53 & 70.35\% & \textbf{0.8324} & \textbf{86.5\%} \\
-            ResNet152 & 0.61 & \textbf{73.2\%} & 0.6484 & 72.3\% \\
+            DenseNet & 0.53 & 70.35\% & \textbf{0.8324} & \textbf{86.5\%} \\
+            ResNet & 0.61 & \textbf{73.2\%} & 0.6484 & 72.3\% \\
             \hline
             \textbf{Ensemble (Voting)} & \textbf{0.75} & \textbf{81.94\%} & 0.7169 & 79.4\% \\
             \hline
