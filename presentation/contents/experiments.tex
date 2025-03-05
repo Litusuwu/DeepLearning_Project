@@ -14,7 +14,7 @@
     \begin{itemize}
         \item \textbf{Preprocessing:} Images resized to \textbf{224x224} and augmented.
         \item \textbf{Training Strategy:} Individual CNNs trained separately.
-        \item \textbf{Evaluation:} Models compared based on \textbf{accuracy, precision, recall, and F1-score}.
+        \item \textbf{Evaluation:} Models compared based on \textbf{accuracy}, precision, recall, and \textbf{F1-score}.
     \end{itemize}
 \end{frame}
 
@@ -24,18 +24,18 @@
 \begin{frame}
     \frametitle{Keras Tuner for Hyperparameter Search}
     \begin{itemize}
-        \item \textbf{Keras Tuner} used for optimizing \textbf{batch size, dropout, L2 regularization, and learning rate}.
+        \item \textbf{Keras Tuner} used for optimizing \textbf{unfrozen layers, dropout, L2 regularization, and learning rate}.
         \item Best hyperparameters found:
     \end{itemize}
     \begin{table}[]
         \centering
         \begin{tabular}{|c|c|c|c|c|}
             \hline
-            \textbf{Model} & \textbf{Batch Size} & \textbf{Dropout} & \textbf{L2 Factor} & \textbf{Learning Rate} \\
+            \textbf{Model} & \textbf{U. layers} & \textbf{Dropout} & \textbf{L2 Factor} & \textbf{L. Rate} \\
             \hline
-            Xception & 10 & 0.45 & 0.001 & 0.00541 \\
-            DenseNet121 & 64 & 0.35 & 0.001 & 0.00147 \\
-            ResNet152 & 64 & 0.4 & 0.0005 & 0.00093 \\
+            Xception & 25 & 0.45 & 0.001 & 0.00541 \\
+            DenseNet121 & 20 & 0.35 & 0.001 & 0.00147 \\
+            ResNet152 & 45 & 0.4 & 0.0005 & 0.00093 \\
             \hline
         \end{tabular}
     \end{table}
