@@ -1,6 +1,3 @@
-# ===================================
-# Python / Jupyter / OS
-# ===================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -9,22 +6,15 @@ __pycache__/
 .idea
 Thumbs.db
 
-# ===================================
-# Entornos virtuales
-# ===================================
 venv/
 .venv/
 env/
 .conda/
-fire_detection_env/
 env.yaml
 
-# ===================================
-# Archivos de logs
-# ===================================
 *.log
 logs/
-report/
+# report/
 report2/
 experiments/
 keras_tuner/
@@ -32,26 +22,20 @@ kt_tuner_dir/
 src/search/experiments/
 confusion_matrices/
 
-# ===================================
-# Datos
-# ===================================
+# data
 data/raw/
 data/resized/
 data/augmented/
 data/processed/
 data/external/
 
-# ===================================
-# Modelos entrenados
-# ===================================
+# models
 models/*.h5
 models/*.ckpt
 **/*.keras
 **/*.h5
 
-# ===================================
 # LaTeX
-# ===================================
 *.aux
 *.log
 *.toc

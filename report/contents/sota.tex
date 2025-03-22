@@ -1,99 +1,50 @@
-\section{Estado del Arte}
+\section{State of the Art}
+\label{sec:sota}
 
-\subsection{Métodos Clásicos y Sensores}
-Existen diversos enfoques convencionales de detección de incendios:
-\begin{enumerate}
-    \item Sistemas basados en sensores (ópticos, de humo, de gas, de temperatura, etc)
-    que pueden percibir señales asociadas al fuego, pero cuyo alcance y capacidad de
-    respuesta pueden resultar limitados.
-    \item Técnicas de visión clásica basadas en la segmentación de color característico
-    del fuego (naranja, amarillo, rojo) o el humo (blanco, gris, negro) que han sido
-    útiles en sistemas de videovigilancia tempranos, pero que suelen verse
-    afectados por altas tasas de falsas alarmas (reflejos, luces parásitas, nubes con
-    tonos similares, etc).
-\end{enumerate}
+\subsection{Classic Methods and Sensors}
+\label{subsec:classic-methods}
 
-\subsection{Métodos con ML y DL}
-Con la expansión de la videovigilancia y la aparición de la visión por computadora,
-se han intentado proponer métodos más sofisticados que no solo integran lo mencionado
-anteriormente, sino que también agregan forma, textura, dinámica y variación de luz
-para identificar el comportamiento propio del fuego.
+Earlier methods use various sensors (optical, smoke, gas, temperature), but they only
+detect partial indicators of fire and have limited coverage.
+Classical image processing often relies on color segmentation of flames or smoke,
+but may yield high false positives (e.g., bright lights, cloud glare).
 
-\subsubsection{Clasificación con CNNs pre entrenadas}
-Diversas arquitecturas de redes neuronales convolucionales (CNN), como pueden ser Inception,
-VGGNet, Xception, DenseNet o ResNet, han demostrado resultados prometedores en la
-clasificación de imágenes de fuego y humo. Sin embargo, uno de los retos es la
-disponibilidad de grandes volúmenes de datos. Por ello, se han considerado diversas técnicas
-que permitan sobrellevar este problema.
+\subsection{Machine Learning and Deep Learning}
+\label{subsec:ml-dl}
 
-\begin{enumerate}
-    \item \textbf{Transfer Learning:} Consiste en reutilizar una red preentrenada en un
-    conjunto de datos grande y ajustarla a un conjunto de datos más pequeño y específico.
-    \item \textbf{Fine Tuning:} Consiste en ajustar los pesos de una red preentrenada
-    en un conjunto de datos similar al de interés, pero con una tarea diferente.
-    \item \textbf{Data Augmentation:} Consiste en generar nuevas imágenes a partir de
-    las existentes, aplicando transformaciones como rotaciones, traslaciones, zooms,
-    cambios de brillo y contraste, etc.
-\end{enumerate}
+Computer vision has evolved to use shape, texture, and light variation for detecting
+fire or smoke, extending beyond simple color segmentation.
 
-\subsubsection{Detección de objetos con YOLO}
-A pesar de que las CNNs clásicas son efectivas en la clasificación de imágenes, no
-son tan eficientes en la detección de objetos. Por ello, se han propuesto arquitecturas
-como YOLO (You Only Look Once) que permiten identificar y localizar elementos en
-imágenes en tiempo real y con alta precisión.
+\subsubsection{CNNs for Classification}
+Architectures like Inception, Xception, DenseNet, or ResNet have shown promise in
+binary fire classification.
+Key techniques include:
+\begin{itemize}
+    \item \textbf{Transfer Learning:} Reusing networks pretrained on large datasets, then
+    fine-tuning them for fire detection.
+    \item \textbf{Data Augmentation:} Generating new images from existing ones to increase
+    dataset size and variability.
+\end{itemize}
 
-\subsubsection{Clasificación con Transformadores de Visión (ViTs)}
-Los Vision Transformers (ViTs) han surgido como una alternativa prometedora a las
-CNNs para la clasificación de imágenes. A diferencia de las CNNs,
-que utilizan convoluciones para extraer características, los ViTs emplean
-mecanismos de autoatención para capturar relaciones globales en la imagen.
-Esta capacidad les permite modelar dependencias a largo alcance y adaptarse mejor
-a variaciones en la textura y el contexto del fuego y el humo. Aunque requieren
-grandes volúmenes de datos para un entrenamiento efectivo, el preentrenamiento en datasets
-masivos y fine-tuning ha permitido su aplicación en la detección de incendios con
-resultados competitivos.
+\subsubsection{Object Detection with YOLO}
+Unlike CNNs that classify an entire image, YOLO (You Only Look Once) localizes
+the region containing fire or smoke.
+YOLOv8 simplifies anchor settings and has proven
+efficient for real-time detection \cite{yaseen2024yolov8indepthexplorationinternal}.
 
-\subsection{Hallazgos recientes destacados}
+\subsubsection{Vision Transformers (ViTs)}
+ViTs capture global relationships in images through self-attention.
+Although they require large amounts of data, pretraining on extensive datasets can yield excellent
+performance for fire detection.
 
-\subsubsection{Yang (2019), Mao et al. (2018)}
-Desarrollaron un pipeline para clasificación de incendios forestales con CNNs pre entrenadas
-de 3 modelos destacables, VGG16, InceptionV3 y Xception. Exploraron el fine tuning y usaron
-optimización bayesianda con LwF. Esto demostró una mejor abrupta en los nuevos datosy
-demostró el gran potencial existente en las técnicas de deep learning y transfer learning
-para la detección de incendios y clasificación de imágenes.
+\subsection{Recent Highlights}
+\label{subsec:recent-highlights}
 
-\subsubsection{Chetoui \& Akhloufi (2024)}
-Los autores propusieron emplear los modelos YOLOv8 y YOLOv7 para la detección de incendios
-forestales. Para ello, usaron un dataset de 11,000 imágenes de incendios. Además, aplicaron
-técnicas de fine tuning y data augmentation para mejorar el rendimiento de los modelos.
-Condujeron sus experimentos en un NVidia V100SXM2 (16GB) y en un CPU Intel Gold 6148 Skylake
-(2.4 GHz). Los resultados mostraron que YOLOv8 superó a YOLOv7 en términos de precisión y
-recall. Incluso en situaciones con bajo contraste del humo en las imágenes de validación,
-logró obtener una confianza de aproximadamente 0.8 \cite{fire7040135}.
-
-\subsubsection{Mehta \& Rastegari (2022)}
-Los autores propusieron MobileViT, un modelo ligero basado en Vision Transformers (ViTs)
-optimizado para tareas de visión en dispositivos con recursos limitados, como teléfonos y
-drones. A diferencia de ViTs tradicionales, que requieren una gran cantidad de parámetros y
-capacidad computacional, MobileViT combina convoluciones con autoatención global para
-capturar tanto características locales como globales con menos cómputo. Sus experimentos en
-ImageNet-1k y MS-COCO demostraron que MobileViT supera a CNNs ligeras como MobileNetV3 y a
-modelos ViT compactos como DeIT, logrando un mejor equilibrio entre precisión y eficiencia.
-Este enfoque sugiere que los transformers pueden ser una opción viable para la detección
-de incendios en tiempo real en drones sin comprometer rendimiento ni consumo
-energético \cite{mobilevit2022}.
-
-\subsubsection{Palaparthi \& Nangi (2023)}
-Los autores desarrollaron FireSight, un modelo de clasificación de incendios basado
-en imágenes aéreas capturadas por drones. Para mejorar la precisión y eficiencia en
-dispositivos con recursos limitados, combinaron Vision Transformers (ViTs) con CNNs
-en un modelo ensemblado. Su enfoque incluyó técnicas de fine-tuning, data augmentation
-y reducción de parámetros mediante la poda de capas del ViT. Compararon su método con
-arquitecturas previas como Xception y ResNet, logrando un 82.28\% de precisión en la
-detección de incendios en el conjunto de datos FLAME. Sus experimentos demostraron que
-el ensemblado de ViTs y CNNs captura mejor las características de fuego y humo, lo que
-hace que este enfoque sea prometedor para la detección temprana de
-incendios con drones \cite{firesight2023}.
-
-
-
+\begin{itemize}
+    \item \textbf{Chetoui \& Akhloufi (2024):} Fine-tuned YOLOv8 and YOLOv7 on a set of
+    11k images. YOLOv8 outperformed YOLOv7 in smoke/fire detection.
+    \item \textbf{MobileViT (Mehta \& Rastegari, 2022):} Proposed a lightweight transformer,
+    combining convolution and global self-attention for mobile devices.
+    \item \textbf{FireSight (Palaparthi \& Nangi, 2023):} Combined ViTs and CNNs in an ensemble,
+    achieving 82.28\% accuracy on the FLAME dataset \cite{firesight2023}.
+\end{itemize}

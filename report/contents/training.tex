@@ -1,263 +1,94 @@
-\section{Entrenamiento}
-En esta sección, describimos la primera fase de nuestro experimento con la arquitectura
-DenseNet. El objetivo de este entrenamiento inicial es obtener un modelo base
-y analizar aspectos clave como la estabilidad de la pérdida, el sobreajuste
-y los desbalances en las clases. Los resultados de esta fase servirán como base para
-mejorar el modelo y el entrenamiento de los demás en las siguientes iteraciones.
+\section{Model Training}
+\label{sec:model-training}
 
+In this section, we discuss how we trained each of our three CNNs (DenseNet, ResNet,
+and Xception) after determining optimal hyperparameters using a systematic search phase.
 
-\subsection{Hiperparámetros}
-\subsubsection{Tamaño del Batch (Batch Size)}
-\begin{itemize}
-    \item \textbf{Inicial:} 16
-    \item \textbf{Optimización:} Se redujo a 8 en la última versión del modelo para mejorar la \textbf{generalización}, reduciendo la probabilidad de sobreajuste.
-\end{itemize}
+\subsection{Hyperparameter Selection}
+\label{subsec:hyperparameter-selection}
 
-\subsubsection{Tasa de Aprendizaje (Learning Rate)}
-\begin{itemize}
-    \item \textbf{Inicial:} 0.001
-    \item \textbf{Optimización:} Se redujo a 0.0001 para hacer los ajustes de los pesos más suaves y evitar grandes oscilaciones en la pérdida.
-\end{itemize}
-
-\subsubsection{Optimizador}
-\begin{itemize}
-    \item \textbf{Inicial:} Adam
-    \item \textbf{Optimización:} Se mantuvo Adam porque ofrece una actualización eficiente de los pesos con momentums adaptativos, pero se ajustaron sus hiperparámetros internos.
-\end{itemize}
-
-\subsubsection{Fine-Tuning)}
-\begin{itemize}
-    \item \textbf{Modelo 2:} Se descongelaron 10 capas de DenseNet, pero esto no mejoró la precisión.
-    \item \textbf{Modelo 3:} Se redujo a 5 capas, logrando un entrenamiento más estable sin tanto sobreajuste.
-\end{itemize}
-
-\subsubsection{Loss Function}
-\begin{itemize}
-    \item \textbf{Inicial:} Cross-Entropy estándar.
-    \item \textbf{Optimización:} Se agregó \textbf{pesado de clases (class weighting)} para reducir el sesgo del modelo hacia imágenes de "Fuego" y mejorar la detección de "No Fuego".
-\end{itemize}
-
-\subsubsection{Balanceo de Clases}
-\begin{itemize}
-    \item \textbf{Problema:} El dataset tenía muchas más imágenes de "Fuego" que de "No Fuego".
-    \item \textbf{Solución:} Se aplicó pesado de clases en la función de pérdida, obligando al modelo a prestar más atención a la clase minoritaria.
-\end{itemize}
-
-\subsubsection{Epochs}
-\begin{itemize}
-    \item \textbf{Inicial:} 30 épocas.
-    \item \textbf{Optimización:} Se ha mantenido, pero con ajustes en la tasa de aprendizaje y el batch size para evitar sobreajuste prematuro.
-\end{itemize}
-
-\subsubsection{Data Augmentation}
-\begin{itemize}
-    \item \textbf{Inicial:} Transformaciones básicas como escalado y normalización.
-    \item \textbf{Optimización:} Se añadieron rotaciones, flips horizontales y cambios de brillo y contraste para mejorar la robustez del modelo.
-\end{itemize}
-
-\subsubsection{Early Stopping}
-\begin{itemize}
-    \item Habilitado para detener el entrenamiento si la pérdida de validación deja de mejorar después de un cierto número de épocas, evitando un uso innecesario de recursos.
-\end{itemize}
-
-\subsubsection{Número de Neuronas en Capas Densas}
-\begin{itemize}
-    \item \textbf{Denso Final:} Se mantuvo en 512 neuronas con activación ReLU antes de la capa de salida.
-\end{itemize}
-
-\paragraph{Regularización L2}
-\begin{itemize}
-    \item Añadida en las capas densas para evitar sobreajuste al penalizar valores de pesos muy altos.
-\end{itemize}
-
-\subsubsection{Dropout}
-\begin{itemize}
-    \item \textbf{Inicial:} 0.3
-    \item \textbf{Optimización:} Aumentado a 0.5 en la última versión para mejorar la robustez del modelo reduciendo la dependencia de neuronas individuales.
-\end{itemize}
-
-\subsubsection{Análisis de Mejoras del Modelo}
-
-\paragraph{Modelo 1 $\rightarrow$ Modelo 2}
-\begin{itemize}
-    \item El ajuste fino (descongelar 10 capas) no mejoró la precisión.
-    \item La pérdida de validación disminuyó, pero el sobreajuste aumentó.
-    \item El desbalance de clases siguió siendo un problema grave (Recall de "No Fuego" = 0.02).
-    \item El modelo tenía un sesgo fuerte hacia las imágenes de "Fuego".
-\end{itemize}
-
-\subsubsection{Modelo 2 $\rightarrow$ Modelo 3}
-\begin{itemize}
-    \item Se redujo el ajuste fino de 10 capas a 5 capas $\rightarrow$ Mayor estabilidad.
-    \item La pérdida de validación se volvió más estable.
-    \item El Recall de "No Fuego" mejoró de 0.02 a 0.06 (aunque sigue siendo bajo).
-    \item El modelo aún tiene dificultades para detectar "No Fuego".
-\end{itemize}
-
-\subsubsection{Modelo 3 $\rightarrow$ Modelo 4 (Modelo Actual)}
-\begin{itemize}
-    \item Se redujo el tamaño del batch de 16 a 8 $\rightarrow$ Mejora la generalización.
-    \item Se redujo la tasa de aprendizaje de 0.001 a 0.0001 $\rightarrow$ Previene el sobreajuste.
-    \item Se agregó balanceo de pesos de clase $\rightarrow$ Obliga al modelo a enfocarse más en "No Fuego".
-    \item Se agregó ReduceLROnPlateau $\rightarrow$ Reduce la tasa de aprendizaje dinámicamente cuando el entrenamiento se ralentiza.
-\end{itemize}
-
-\subsubsection{Modelo 4 $\rightarrow$ Modelo 5}
-\begin{itemize}
-    \item Se introdujo \textbf{regularización L2} con un valor de \textbf{0.01} para reducir el sobreajuste penalizando pesos excesivamente altos.
-    \item Se agregó \textbf{data augmentation con rotaciones de hasta 20 grados} para mejorar la capacidad de generalización del modelo.
-    \item La precisión global no cambió significativamente, pero el \textbf{F1 Score mejoró} levemente y la estabilidad del modelo aumentó.
-    \item A pesar de estos cambios, el modelo aún tenía un **recall bajo en la clase "No Fuego"**.
-\end{itemize}
-
-\subsubsection{Modelo 5 $\rightarrow$ Modelo 6}
-\begin{itemize}
-    \item Se aumentó el número de \textbf{capas descongeladas a 10}, permitiendo un mayor ajuste fino de la red.
-    \item Se añadió \textbf{Dropout de 0.3} en las capas densas para reducir el sobreajuste y mejorar la robustez del modelo.
-    \item Se ajustó el \textbf{L2 a un valor más pequeño (1e-13)} para permitir mayor flexibilidad en la optimización sin sacrificar generalización.
-    \item Con estos cambios, el modelo alcanzó su \textbf{mejor precisión hasta ahora (61.40\%)} y el \textbf{mejor F1 Score (0.2152)}.
-    \item La \textbf{precisión y recall de "No Fuego"} también mejoraron significativamente, lo que indica un mejor balance en la clasificación.
-\end{itemize}
-
-\subsection{Comparación de Modelos}
-
-\begin{table}[h]
-    \centering
-    \renewcommand{\arraystretch}{1.3}
-    \resizebox{\textwidth}{!}{ % Resizes the table to fit the width
-    \begin{tabular}{|l|c|c|c|c|c|c|}
-        \hline
-        \textbf{Métrica} & \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Modelo 3} & \textbf{Modelo 4} & \textbf{Modelo 5} & \textbf{Modelo 6} \\
-        & (Congelado) & (10 Capas) & (5 Capas) & (Balanceado) & (L2=0.01) & (10 Capas, L2=1e-13) \\
-        \hline
-        Precisión & 57.27\% & 57.27\% & 58.76\% & 58.48\% & 58.48\% & 61.40\% \\
-        \hline
-        F1 Score & 0.0386 & 0.0386 & 0.1012 & 0.0996 & 0.1033 & 0.2152 \\
-        \hline
-        R² Score & -0.7187 & -0.7187 & -0.5241 & -0.4149 & -0.4998 & -0.4499 \\
-        \hline
-        AUC-ROC & 0.7820 & 0.7820 & 0.8306 & 0.8293 & 0.8304 & 0.8324 \\
-        \hline
-        Precisión Fuego & 0.59 & 0.59 & 0.60 & 0.60 & 0.60 & 0.62 \\
-        \hline
-        Recall Fuego & 0.95 & 0.95 & 0.95 & 0.94 & 0.94 & 0.94 \\
-        \hline
-        Precisión No Fuego & 0.21 & 0.21 & 0.42 & 0.40 & 0.40 & 0.60 \\
-        \hline
-        Recall No Fuego & 0.02 & 0.02 & 0.06 & 0.06 & 0.06 & 0.13 \\
-        \hline
-    \end{tabular}
-    }
-    \caption{Comparación de métricas de evaluación entre diferentes modelos entrenados.}
-    \label{tab:evaluation_metrics}
-\end{table}
-
-\subsection{Entrenamiento del Modelo DenseNet}
-
-Para entrenar el modelo, se utilizó \textbf{DenseNet121} con pesos preentrenados de
-\textit{ImageNet}, aplicando ajuste fino en sus capas superiores para mejorar su
-capacidad de extracción de características. La optimización de hiperparámetros se
-realizó utilizando \textbf{Keras Tuner}, permitiendo encontrar la mejor combinación
-de valores para maximizar el rendimiento del modelo en la tarea de clasificación.
-
-\subsubsection{Optimización con Keras Tuner}
-Para encontrar la mejor configuración del modelo, se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, explorando distintas combinaciones de hiperparámetros:
+We explored several hyperparameters, focusing on those that strongly affect model capacity
+and convergence:
 
 \begin{itemize}
-    \item \textbf{Tasa de dropout}: 0.35
-    \item \textbf{Factor de regularización L2}: $1 \times 10^{-3}$
-    \item \textbf{Número de capas descongeladas}: 20
-    \item \textbf{Tasa de aprendizaje}: $1.047 \times 10^{-3}$
+    \item \textbf{Learning Rate (LR):} Controls the step size in gradient descent updates.
+    Too high can cause divergence; too low can slow training.
+    \item \textbf{Dropout Rate:} Randomly deactivates neurons during training to combat
+    overfitting. We tested rates from 0.2 to 0.5.
+    \item \textbf{L2 Regularization Factor:} Encourages smaller weight magnitudes to reduce
+    overfitting. We examined values in \(\{1 \times 10^{-4}, 5 \times 10^{-4}, 1 \times 10^{-3}\}\).
+    \item \textbf{Number of Unfrozen Layers:} Determines how much of the pretrained backbone
+    is fine-tuned. For each model, we tested unfreezing anywhere from 5 to 45 layers, depending
+    on the architecture.
 \end{itemize}
 
-Se realizaron 10 experimentos (\textit{trials}), almacenando el mejor modelo de
-cada uno. El mejor modelo se determinó en función de la \textbf{exactitud en el
-conjunto de validación}.
+These hyperparameters were targeted because they strongly influence both the representation
+power of the model and its generalization
+Unfreezing more layers can extract specialized features, though it requires more computational effort and data.
+Meanwhile, a suitable dropout and L2 factor can markedly reduce overfitting in smaller or imbalanced datasets.
 
-\subsubsection{Resultados del Mejor Modelo}
-El modelo con los hiperparámetros óptimos obtuvo los siguientes resultados en el
-conjunto de testeo:
+\subsection{Hyperparameter Search Phase}
+\label{subsec:hyperparameter-search-phase}
+
+To find the optimal configuration for each network, we used \textbf{Keras Tuner} with
+a Random Search strategy:
+\begin{itemize}
+    \item \textbf{Trials:} Up to 10 trials per model.
+    \item \textbf{Executions per trial:} 1 or 2, to confirm reproducibility.
+    \item \textbf{Objective:} Maximize validation accuracy on the FLAME dataset.
+\end{itemize}
+
+During this search phase:
+\begin{enumerate}
+    \item We loaded each model (DenseNet121, ResNet152, Xception) with ImageNet weights
+    frozen.
+    \item Keras Tuner varied learning rate, dropout, L2 factor, and number of unfrozen layers.
+    \item Each candidate model was trained for up to 20 epochs (with early stopping), and we
+    tracked validation loss/accuracy.
+    \item The best-performing hyperparameters were then saved and used for final training.
+\end{enumerate}
+
+\subsection{Final Training Procedure}
+\label{subsec:final-training-procedure}
+
+After identifying the best hyperparameters, we performed the \textbf{final training} step
+as follows:
+
+\begin{enumerate}
+    \item \textbf{Model Initialization:} We loaded each pretrained backbone (DenseNet121,
+    ResNet152, or Xception) and unfroze the exact number of layers determined by the tuner.
+    \item \textbf{Compile and Train:} We compiled with Adam, using the selected learning
+    rate and including dropout and L2 factors. We trained each model on the augmented FLAME
+    training set, plus a validation split, for up to 30 epochs. Early stopping prevented
+    overfitting.
+    \item \textbf{Checkpointing:} We saved the best epoch’s weights as \texttt{model\_final.keras}.
+\end{enumerate}
+
+Below is a summary of the final hyperparameters for each model:
 
 \begin{itemize}
-    \item \textbf{Exactitud (Accuracy)}: 86.50\%
-    \item \textbf{F1-Score}: 83.24\%
-    \item \textbf{Coeficiente de Determinación (R²)}: 0.5798
-    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 94.60\%
+    \item \textbf{Xception:}
+    \begin{itemize}
+       \item Unfrozen Layers: 25
+       \item Dropout: 0.45
+       \item L2 Factor: 0.001
+       \item Learning Rate: 0.00541
+    \end{itemize}
+    \item \textbf{DenseNet121:}
+    \begin{itemize}
+       \item Unfrozen Layers: 20
+       \item Dropout: 0.35
+       \item L2 Factor: 0.001
+       \item Learning Rate: 0.00147
+    \end{itemize}
+    \item \textbf{ResNet152:}
+    \begin{itemize}
+       \item Unfrozen Layers: 45
+       \item Dropout: 0.40
+       \item L2 Factor: 0.0005
+       \item Learning Rate: 0.00093
+    \end{itemize}
 \end{itemize}
 
-El modelo final se guardó como \texttt{final\_best\_model.keras} y se usaron para
-la fase de ensamble despliegue.
-
-\subsection{Entrenamiento del Modelo ResNet}
-
-Para entrenar el modelo, se utilizó \textbf{ResNet50} con pesos preentrenados de
-\textit{ImageNet}, permitiendo el ajuste fino de ciertas capas para mejorar su
-capacidad de generalización. La optimización de hiperparámetros se realizó
-utilizando \textbf{Keras Tuner}.
-
-\subsubsection{Optimización con Keras Tuner}
-Se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, evaluando distintas
-combinaciones de hiperparámetros. Los mejores valores obtenidos fueron:
-
-\begin{itemize}
-    \item \textbf{Tasa de dropout}: 0.40
-    \item \textbf{Factor de regularización L2}: $5 \times 10^{-4}$
-    \item \textbf{Número de capas descongeladas}: 15
-    \item \textbf{Tasa de aprendizaje}: $8.23 \times 10^{-4}$
-\end{itemize}
-
-Se ejecutaron 10 pruebas (\textit{trials}), almacenando el mejor modelo de cada una.
-El criterio para seleccionar el mejor modelo fue la \textbf{exactitud en el conjunto de
-validación}.
-
-\subsubsection{Evaluación del Mejor Modelo}
-
-Después de seleccionar el mejor modelo basado en validación, se realizó una evaluación final en el conjunto de prueba.
-Los resultados obtenidos fueron:
-
-\begin{itemize}
-    \item \textbf{Exactitud (Accuracy)}: 60.20\%
-    \item \textbf{F1-Score}: 60.10\%
-    \item \textbf{Coeficiente de Determinación (R²)}: 0.4621
-    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 70.75\%
-\end{itemize}
-
-El modelo final se guardó como \texttt{final\_best\_model.keras} y será utilizado
-en la fase de despliegue.
-
-\subsection{Entrenamiento del Modelo Xception}
-
-Para entrenar el modelo, se utilizó \textbf{Xception}, una arquitectura basada en
-\textit{deep separable convolutions}, con pesos preentrenados de \textit{ImageNet}.
-Se realizó un ajuste fino en las capas superiores para mejorar la capacidad de
-aprendizaje de características específicas. La optimización de hiperparámetros se
-realizó utilizando \textbf{Keras Tuner}.
-
-\subsubsection{Optimización con Keras Tuner}
-Se empleó \textbf{Keras Tuner} con \textit{RandomSearch}, explorando múltiples combinaciones
-de hiperparámetros para mejorar el desempeño del modelo. Los valores óptimos encontrados fueron:
-
-\begin{itemize}
-    \item \textbf{Tasa de dropout}: 0.30
-    \item \textbf{Factor de regularización L2}: $5 \times 10^{-4}$
-    \item \textbf{Número de capas descongeladas}: 10
-    \item \textbf{Tasa de aprendizaje}: $7.15 \times 10^{-4}$
-\end{itemize}
-
-Se ejecutaron 10 pruebas (\textit{trials}), almacenando el mejor modelo de cada una.
-El criterio para seleccionar el mejor modelo fue la \textbf{exactitud en el conjunto de validación}.
-
-\subsubsection{Evaluación del Mejor Modelo}
-
-Tras seleccionar el mejor modelo basado en validación, se realizó una evaluación final en el conjunto de prueba.
-Los resultados obtenidos fueron:
-
-\begin{itemize}
-    \item \textbf{Exactitud (Accuracy)}: 78.00\%
-    \item \textbf{F1-Score}: 67.11\%
-    \item \textbf{Coeficiente de Determinación (R²)}: 0.2840
-    \item \textbf{Área bajo la curva ROC (AUC-ROC)}: 86.29\%
-\end{itemize}
-
-El modelo final se guardó como \texttt{final\_best\_model.keras} y será utilizado en la fase de despliegue.
-
+These settings allowed each model to adapt to wildfire detection with good stability and minimal overfitting.
+The next step is to combine the individually trained models in an ensemble approach, as described in later sections.

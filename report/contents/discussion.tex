@@ -1,0 +1,22 @@
+\section{Discussion}
+\label{sec:discussion}
+
+Key observations include:
+
+\begin{itemize}
+    \item \textbf{Individual vs. Ensemble:} 
+      DenseNet outperforms the ensemble in pure accuracy (86.50\%). Xception had the
+      lowest F1-score but still gained from hyperparameter tuning.
+    \item \textbf{Class Imbalance:} 
+      Weighted loss and data augmentation helped mitigate the Fire vs. No Fire imbalance.
+      However, some confusion persists in subtle smoke conditions.
+    \item \textbf{Comparison to FireSight:} 
+      Our DenseNet surpasses their best accuracy (86.50\% vs. 82.28\%), but the ensemble’s
+      F1-score (0.7169) is lower than FireSight’s 0.75.
+    \item \textbf{Dataset Limitations:} 
+      FLAME does not cover every forest environment (e.g., tropical rainforests), so
+      further dataset expansion could generalize these models better.
+\end{itemize}
+
+Additionally, advanced fine-tuning and hyperparameter search (via Keras Tuner) were crucial
+to reaching these performance levels.

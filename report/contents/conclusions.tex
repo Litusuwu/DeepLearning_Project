@@ -1,0 +1,25 @@
+\section{Conclusions and Future Work}
+\label{sec:conclusions}
+
+\begin{itemize}
+    \item \textbf{DenseNet121} achieved the best accuracy (86.50\%) on FLAME, with an
+    F1-score of 0.8324.
+    \item The \textbf{ensemble} of Xception, DenseNet, and ResNet delivers consistent
+    performance (79.40\% accuracy), though it does not surpass DenseNet alone.
+    \item \textbf{Keras Tuner} guided hyperparameter tuning, significantly improving
+    each individual model's performance.
+    \item \textbf{Future Directions:}
+      \begin{enumerate}
+        \item \textbf{Knowledge Distillation:} Compress the ensemble into MobileNetV3
+        for lighter deployments on drones.
+        \item \textbf{Pruning:} Reduce unnecessary weights to speed up inference.
+        \item \textbf{Vision Transformers (ViTs):} Integrate and compare them against
+        the CNN ensemble.
+      \end{enumerate}
+\end{itemize}
+
+In summary, this project underscores the potential of deep learning for near-real-time
+wildfire detection and opens the path for efficient aerial monitoring systems.
+
+\textbf{Acknowledgment:} Credit must be given to all three members of \textbf{CPSquad},
+as they contributed equally to this work.

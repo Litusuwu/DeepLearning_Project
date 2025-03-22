@@ -21,7 +21,6 @@
 \usepackage{tocloft}           % For customizing ToC
 \usepackage{etoolbox}          % For patching commands
 \usepackage{parskip}
-\usepackage[spanish]{babel}
 \usepackage{cite}
 \usepackage{url}
 \usepackage{hyperref}
@@ -31,7 +30,7 @@
 
 \newcommand{\courseTitle}{Deep Learning}
 \newcommand{\college}{Pontificia Universidad Católica del Perú}
-\newcommand{\faculty}{Facultad de Ciencias e Ingeniería}
+\newcommand{\faculty}{Faculty of Science and Engineering}
 \newcommand{\courseCode}{1INF52}
 \newcommand{\semester}{2025-0}
 \newcommand{\noteDate}{\today}
@@ -74,9 +73,9 @@
     \input{contents/model}
     \input{contents/preprocessing}
     \input{contents/training}
-    
-    % \include{contents/experimentation}
-    % \include{contents/conclusions}
+    \input{contents/results}
+    \input{contents/discussion}
+    \input{contents/conclusions}
 
     \newpage
     \bibliography{contents/references}
